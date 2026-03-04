@@ -1,0 +1,39 @@
+<%= @status_page.name %>
+✅ INCIDENT RESOLVED
+
+<%= @incident.title %>
+
+This incident has been resolved!
+<% if @incident.resolved_at.present? %>
+Resolution time: <%= @incident.resolved_at.strftime("%B %d, %Y at %l:%M %p %Z") %>
+<% end %>
+
+Impact: <%= @incident.impact.humanize.upcase %>
+Status: RESOLVED
+
+<% if @incident.description.present? %>
+Description:
+<%= @incident.description %>
+
+<% end %>
+<% if @incident.components.any? %>
+Previously Affected Components:
+<% @incident.components.each do |component| %>
+- <%= component.name %>: <%= component.status.humanize %>
+<% end %>
+
+<% end %>
+Duration: <% if @incident.started_at.present? && @incident.resolved_at.present? %>
+<%= time_ago_in_words(@incident.resolved_at, @incident.started_at) %>
+<% else %>
+Unknown
+<% end %>
+
+Started: <%= @incident.started_at.strftime("%B %d, %Y at %l:%M %p %Z") %>
+Resolved: <%= @incident.resolved_at.strftime("%B %d, %Y at %l:%M %p %Z") if @incident.resolved_at.present? %>
+
+View full status page: <%= status_page_url(@status_page) %>
+
+---
+You're receiving this because you're subscribed to <%= @status_page.name %> status updates.
+Unsubscribe: <%= @unsubscribe_url %>

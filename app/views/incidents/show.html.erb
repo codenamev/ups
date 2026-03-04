@@ -1,0 +1,293 @@
+<%
+  title = @incident.title
+  breadcrumbs = [
+    { text: "Dashboard", path: dashboard_path },
+    { text: "Incidents", path: incidents_path },
+    { text: title, path: status_page_incident_path(@incident.status_page, @incident) }
+  ]
+%>
+
+<div class="max-w-6xl mx-auto">
+  <!-- Header -->
+  <div class="mb-6">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="flex items-center gap-3 mb-2">
+          <h1 class="text-2xl font-bold text-gray-900"><%= @incident.title %></h1>
+          
+          <!-- Status Badge -->
+          <% status_class = case @incident.status
+             when "investigating" then "bg-yellow-100 text-yellow-800"
+             when "identified" then "bg-orange-100 text-orange-800"  
+             when "monitoring" then "bg-blue-100 text-blue-800"
+             when "resolved" then "bg-green-100 text-green-800"
+             end %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= status_class %>">
+            <%= @incident.status.humanize %>
+          </span>
+          
+          <!-- Impact Badge -->
+          <% impact_class = case @incident.impact
+             when "minor" then "bg-gray-100 text-gray-800"
+             when "major" then "bg-orange-100 text-orange-800" 
+             when "critical" then "bg-red-100 text-red-800"
+             when "maintenance" then "bg-blue-100 text-blue-800"
+             end %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= impact_class %>">
+            <%= @incident.impact.humanize %> Impact
+          </span>
+        </div>
+        
+        <% if @incident.description.present? %>
+          <p class="text-gray-600 mt-2"><%= simple_format(@incident.description) %></p>
+        <% end %>
+        
+        <div class="flex items-center gap-6 text-sm text-gray-500 mt-4">
+          <span>
+            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            Created by <%= @incident.user.name %>
+          </span>
+          
+          <span>
+            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <%= @incident.started_at&.strftime("%B %d, %Y at %I:%M %p UTC") || @incident.created_at.strftime("%B %d, %Y at %I:%M %p UTC") %>
+          </span>
+          
+          <% if @incident.resolved_at.present? %>
+            <span>
+              <svg class="w-4 h-4 inline mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Resolved <%= @incident.resolved_at.strftime("%B %d, %Y at %I:%M %p UTC") %>
+            </span>
+          <% end %>
+          
+          <span>
+            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+            </svg>
+            <%= @incident.status_page.name %>
+          </span>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <%= link_to "Post Update", new_status_page_incident_incident_update_path(@incident.status_page, @incident),
+            class: "btn-primary" %>
+        <%= link_to "Edit Incident", edit_status_page_incident_path(@incident.status_page, @incident),
+            class: "btn-secondary" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Components Affected -->
+  <% if @incident.components.any? %>
+    <div class="bg-white rounded-lg shadow border p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Affected Components</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <% @incident.components.each do |component| %>
+          <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+            <div class="flex-shrink-0 w-3 h-3 rounded-full <%= 
+              case component.status
+              when 'operational' then 'bg-green-500'
+              when 'degraded_performance' then 'bg-yellow-500'  
+              when 'partial_outage' then 'bg-orange-500'
+              when 'major_outage' then 'bg-red-500'
+              when 'maintenance' then 'bg-blue-500'
+              else 'bg-gray-500'
+              end
+            %>"></div>
+            <span class="ml-3 text-sm font-medium text-gray-900"><%= component.name %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Timeline and Updates -->
+    <div class="lg:col-span-2 space-y-6">
+      
+      <!-- Updates Section -->
+      <div class="bg-white rounded-lg shadow border" id="incident-updates">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-900">Incident Updates</h2>
+          <%= link_to "Post Update", new_status_page_incident_incident_update_path(@incident.status_page, @incident),
+              class: "btn-sm btn-primary" %>
+        </div>
+        
+        <%= render "incident_updates", incident: @incident, incident_updates: @incident_updates %>
+      </div>
+
+      <!-- Event Timeline -->
+      <div class="bg-white rounded-lg shadow border">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">Event Timeline</h2>
+          <p class="text-sm text-gray-600">Chronological log of all incident events</p>
+        </div>
+        
+        <div class="p-6">
+          <div class="flow-root">
+            <ul role="list" class="-mb-8">
+              <% @incident_events.each_with_index do |event, index| %>
+                <li>
+                  <div class="relative pb-8 <%= 'pb-0' if index == @incident_events.count - 1 %>">
+                    <% unless index == @incident_events.count - 1 %>
+                      <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                    <% end %>
+                    
+                    <div class="relative flex space-x-3">
+                      <div>
+                        <% icon_class = case event.event_type
+                           when "incident_created" then "bg-blue-500"
+                           when "status_changed" then "bg-yellow-500" 
+                           when "component_added" then "bg-green-500"
+                           when "component_removed" then "bg-red-500"
+                           when "update_posted" then "bg-purple-500"
+                           when "update_edited" then "bg-indigo-500"
+                           when "incident_resolved" then "bg-green-600"
+                           when "reopened" then "bg-orange-500"
+                           else "bg-gray-500"
+                           end %>
+                        <span class="h-8 w-8 rounded-full <%= icon_class %> flex items-center justify-center ring-8 ring-white">
+                          <% case event.event_type
+                             when "incident_created" %>
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.996-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                          <% when "status_changed" %>
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                          <% when "update_posted" %>
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                            </svg>
+                          <% else %>
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                          <% end %>
+                        </span>
+                      </div>
+                      
+                      <div class="flex-1 min-w-0">
+                        <div>
+                          <div class="text-sm">
+                            <span class="font-medium text-gray-900">
+                              <%= event.user.name %>
+                            </span>
+                            <span class="text-gray-600">
+                              <%= case event.event_type
+                                  when "incident_created" then "created this incident"
+                                  when "status_changed" then "changed status from #{event.data['old_status']&.humanize} to #{event.data['new_status']&.humanize}"
+                                  when "component_added" then "added a component to this incident"
+                                  when "component_removed" then "removed a component from this incident"
+                                  when "update_posted" then "posted an update"
+                                  when "update_edited" then "edited an update"
+                                  when "incident_resolved" then "resolved this incident"
+                                  when "reopened" then "reopened this incident"
+                                  else event.event_type.humanize
+                                  end %>
+                            </span>
+                          </div>
+                          <p class="mt-0.5 text-sm text-gray-500">
+                            <%= event.occurred_at.strftime("%B %d, %Y at %I:%M %p UTC") %>
+                          </p>
+                          
+                          <% if event.data.present? && event.data.is_a?(Hash) %>
+                            <div class="mt-2 text-xs text-gray-500 bg-gray-50 rounded p-2">
+                              <% event.data.each do |key, value| %>
+                                <div><strong><%= key.humanize %>:</strong> <%= value %></div>
+                              <% end %>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="space-y-6">
+      <!-- Quick Actions -->
+      <div class="bg-white rounded-lg shadow border">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Quick Actions</h3>
+        </div>
+        <div class="p-6 space-y-3">
+          <% unless @incident.status_resolved? %>
+            <%= link_to "Mark as Resolved", 
+                status_page_incident_path(@incident.status_page, @incident, incident: { status: "resolved" }), 
+                method: :patch,
+                class: "w-full btn-success text-center",
+                data: { confirm: "Are you sure you want to mark this incident as resolved?" } %>
+          <% else %>
+            <%= link_to "Reopen Incident", 
+                status_page_incident_path(@incident.status_page, @incident, incident: { status: "investigating" }), 
+                method: :patch,
+                class: "w-full btn-warning text-center",
+                data: { confirm: "Are you sure you want to reopen this incident?" } %>
+          <% end %>
+          
+          <%= link_to "Edit Incident", edit_status_page_incident_path(@incident.status_page, @incident),
+              class: "w-full btn-secondary text-center" %>
+          
+          <%= link_to "Delete Incident", status_page_incident_path(@incident.status_page, @incident),
+              method: :delete,
+              class: "w-full btn-danger text-center",
+              data: { confirm: "Are you sure? This action cannot be undone." } %>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="bg-white rounded-lg shadow border">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">Statistics</h3>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="flex justify-between">
+            <span class="text-sm text-gray-600">Total Updates:</span>
+            <span class="text-sm font-medium text-gray-900"><%= @incident.incident_updates.count %></span>
+          </div>
+          
+          <div class="flex justify-between">
+            <span class="text-sm text-gray-600">Components Affected:</span>
+            <span class="text-sm font-medium text-gray-900"><%= @incident.components.count %></span>
+          </div>
+          
+          <div class="flex justify-between">
+            <span class="text-sm text-gray-600">Event Timeline:</span>
+            <span class="text-sm font-medium text-gray-900"><%= @incident.incident_events.count %> events</span>
+          </div>
+          
+          <% if @incident.started_at && @incident.resolved_at %>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-600">Duration:</span>
+              <span class="text-sm font-medium text-gray-900">
+                <%= distance_of_time_in_words(@incident.started_at, @incident.resolved_at) %>
+              </span>
+            </div>
+          <% elsif @incident.started_at %>
+            <div class="flex justify-between">
+              <span class="text-sm text-gray-600">Duration:</span>
+              <span class="text-sm font-medium text-gray-900">
+                <%= distance_of_time_in_words(@incident.started_at, Time.current) %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

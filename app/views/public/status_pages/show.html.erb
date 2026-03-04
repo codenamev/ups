@@ -1,0 +1,14 @@
+<%# Public Status Page %>
+
+<%= render "overall_status", overall_status: @overall_status %>
+
+<%= render "components_status", components: @components %>
+
+<%= render "recent_incidents", recent_incidents: @recent_incidents %>
+
+<%= render "subscription_form", status_page: @status_page, subscriber: nil %>
+
+<!-- Status History (placeholder for future) -->
+<div class="mt-8 text-center">
+  <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium">View incident history →</a>
+</div>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "ups.dev - Professional Status Pages for Developers | Real-time API Monitoring" %></title>
+    <meta name="description" content="<%= content_for(:description) || "Create beautiful status pages and monitor your APIs in real-time. Professional uptime monitoring trusted by 500+ developers. Start your free trial today." %>">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ups.dev">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<%= content_for(:og_title) || content_for(:title) || "ups.dev - Professional Status Pages for Developers" %>">
+    <meta property="og:description" content="<%= content_for(:og_description) || content_for(:description) || "Create beautiful status pages and monitor your APIs in real-time. Professional uptime monitoring trusted by 500+ developers." %>">
+    <% begin %>
+      <meta property="og:image" content="<%= content_for(:og_image) || asset_url('ups-dev-og-image.png') %>">
+    <% rescue Propshaft::MissingAssetError %>
+      <!-- OG image not available -->
+    <% end %>
+    <meta property="og:url" content="<%= request.original_url %>">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= content_for(:twitter_title) || content_for(:og_title) || content_for(:title) || "ups.dev - Professional Status Pages for Developers" %>">
+    <meta name="twitter:description" content="<%= content_for(:twitter_description) || content_for(:og_description) || content_for(:description) || "Create beautiful status pages and monitor your APIs in real-time." %>">
+    <% begin %>
+      <meta name="twitter:image" content="<%= content_for(:twitter_image) || content_for(:og_image) || asset_url('ups-dev-og-image.png') %>">
+    <% rescue Propshaft::MissingAssetError %>
+      <!-- Twitter image not available -->
+    <% end %>
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<%= content_for(:canonical_url) || request.original_url %>">
+    
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+    
+    <!-- Google Analytics 4 -->
+    <% if Rails.application.credentials.google_analytics_id.present? %>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Rails.application.credentials.google_analytics_id %>"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<%= Rails.application.credentials.google_analytics_id %>', {
+          page_title: '<%= content_for(:title) || "Ups Dev Rails" %>',
+          custom_map: {'custom_parameter_1': 'user_type'}
+        });
+      </script>
+    <% end %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-50">
+    <% if user_signed_in? %>
+      <!-- Navigation for authenticated users -->
+      <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <%= link_to "ups.dev", dashboard_path, class: "text-xl font-bold text-gray-900" %>
+              </div>
+              <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-8">
+                <%= link_to "Dashboard", dashboard_path, 
+                    class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
+                <%= link_to "Status Pages", status_pages_path, 
+                    class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
+                <%= link_to "API Tokens", api_tokens_path, 
+                    class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
+                <% if current_account&.plan == "free" %>
+                  <%= link_to "Upgrade", subscriptions_path, 
+                      class: "border-transparent text-green-600 hover:text-green-700 hover:border-green-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
+                <% else %>
+                  <%= link_to "Billing", subscriptions_path, 
+                      class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
+                <% end %>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+              <span class="text-sm text-gray-600">
+                <%= current_user.email %>
+              </span>
+              <%= link_to "Sign out", sign_out_path, method: :delete, 
+                    class: "bg-white py-1 px-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
+            </div>
+          </div>
+        </div>
+      </nav>
+    <% end %>
+
+    <main class="<%= user_signed_in? ? 'max-w-7xl mx-auto py-6 sm:px-6 lg:px-8' : '' %>">
+      <!-- Flash messages -->
+      <% if notice %>
+        <div class="rounded-md bg-green-50 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-green-800"><%= notice %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      
+      <% if alert %>
+        <div class="rounded-md bg-red-50 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-red-800"><%= alert %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+  </body>
+</html>

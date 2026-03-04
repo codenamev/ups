@@ -1,0 +1,34 @@
+<%= @status_page.name %>
+===============================================
+
+INCIDENT UPDATE: <%= @incident.title %>
+
+LATEST UPDATE - <%= @incident_update.created_at.strftime("%B %d, %Y at %I:%M %p %Z") %>
+<% if @incident_update.message.present? -%>
+<%= @incident_update.message %>
+<% end -%>
+
+Current Status: <%= @incident.status.humanize %>
+Impact: <%= @incident.impact.humanize %>
+<% if @incident.components.any? -%>
+
+Affected Components:
+<% @incident.components.each do |component| -%>
+  • <%= component.name %> - <%= component.status.humanize %>
+<% end -%>
+<% end -%>
+
+Started: <%= @incident.started_at.strftime("%B %d, %Y at %I:%M %p %Z") %>
+<% if @incident.resolved_at -%>
+Resolved: <%= @incident.resolved_at.strftime("%B %d, %Y at %I:%M %p %Z") %>
+<% end -%>
+
+View the full status page:
+<%= status_page_url(@status_page) %>
+
+===============================================
+
+You're receiving this notification because you subscribed to updates from <%= @status_page.name %>.
+
+To unsubscribe from these notifications:
+<%= @unsubscribe_url %>

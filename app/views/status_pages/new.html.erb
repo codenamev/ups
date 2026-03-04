@@ -1,0 +1,82 @@
+<%# New Status Page %>
+<div class="max-w-2xl">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Create Status Page</h1>
+    <p class="text-gray-600 mt-2">Set up a new status page to monitor your services and communicate with your users.</p>
+  </div>
+
+  <%= form_with model: @status_page, local: true, class: "space-y-6" do |form| %>
+    <% if @status_page.errors.any? %>
+      <div class="bg-red-50 border border-red-200 rounded-md p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+              There were <%= pluralize(@status_page.errors.count, "error") %> with your submission:
+            </h3>
+            <div class="mt-2 text-sm text-red-700">
+              <ul class="list-disc list-inside space-y-1">
+                <% @status_page.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :name, placeholder: "e.g. My Service Status", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+      <p class="mt-2 text-sm text-gray-500">A clear name for your status page that users will see.</p>
+    </div>
+
+    <div>
+      <%= form.label :slug, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :slug, placeholder: "my-service-status", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+      <p class="mt-2 text-sm text-gray-500">
+        This will be your status page URL: 
+        <code class="bg-gray-100 px-1 py-0.5 rounded text-sm"><%= request.base_url %>/<span id="slug-preview">your-slug</span></code>
+      </p>
+    </div>
+
+    <div>
+      <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_area :description, rows: 4, placeholder: "Brief description of your services (optional)", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" %>
+      <p class="mt-2 text-sm text-gray-500">Optional description that will appear on your status page.</p>
+    </div>
+
+    <div class="flex justify-between pt-6 border-t">
+      <%= link_to "Cancel", status_pages_path, class: "px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      <%= form.submit "Create Status Page", class: "px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const nameField = document.getElementById('status_page_name');
+  const slugField = document.getElementById('status_page_slug');
+  const slugPreview = document.getElementById('slug-preview');
+  
+  function updateSlug() {
+    if (nameField.value && !slugField.value) {
+      const slug = nameField.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      slugField.value = slug;
+      slugPreview.textContent = slug || 'your-slug';
+    }
+  }
+  
+  function updatePreview() {
+    slugPreview.textContent = slugField.value || 'your-slug';
+  }
+  
+  nameField.addEventListener('input', updateSlug);
+  slugField.addEventListener('input', updatePreview);
+});
+</script>

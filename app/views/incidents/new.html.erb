@@ -1,0 +1,155 @@
+<%
+  title = "New Incident"
+  breadcrumbs = [
+    { text: "Dashboard", path: dashboard_path },
+    { text: "Incidents", path: incidents_path },
+    { text: title, path: new_status_page_incident_path(@status_page) }
+  ]
+%>
+
+<div class="max-w-4xl mx-auto">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900"><%= title %></h1>
+    <p class="text-gray-600 mt-1">Report a new incident and track its resolution.</p>
+  </div>
+
+  <%= form_with model: [@status_page, @incident], local: true, class: "space-y-6" do |form| %>
+    <% if @incident.errors.any? %>
+      <div class="bg-red-50 border border-red-200 rounded-md p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+              <%= pluralize(@incident.errors.count, "error") %> prohibited this incident from being saved:
+            </h3>
+            <div class="mt-2 text-sm text-red-700">
+              <ul role="list" class="list-disc space-y-1 pl-5">
+                <% @incident.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="bg-white rounded-lg shadow border">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Incident Details</h2>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- Status Page Selection -->
+        <div>
+          <%= form.label :status_page_id, "Status Page", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :status_page_id, 
+              options_from_collection_for_select(Current.account.status_pages, :id, :name, @status_page&.id),
+              { prompt: "Select a status page" },
+              { class: "form-select", required: true } %>
+          <p class="mt-1 text-xs text-gray-500">Choose which status page this incident affects.</p>
+        </div>
+
+        <!-- Title -->
+        <div>
+          <%= form.label :title, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :title, 
+              class: "form-input", 
+              placeholder: "Brief description of the incident",
+              required: true %>
+          <p class="mt-1 text-xs text-gray-500">A concise title that describes the incident.</p>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_area :description, 
+              class: "form-textarea",
+              rows: 4,
+              placeholder: "Detailed description of what's happening, potential impact, and initial investigation findings" %>
+          <p class="mt-1 text-xs text-gray-500">Provide context and details about the incident.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Status -->
+          <div>
+            <%= form.label :status, class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.select :status, 
+                options_for_select([
+                  ["Investigating", "investigating"],
+                  ["Identified", "identified"],
+                  ["Monitoring", "monitoring"],
+                  ["Resolved", "resolved"]
+                ], @incident.status),
+                {},
+                { class: "form-select", required: true } %>
+            <p class="mt-1 text-xs text-gray-500">Current status of the incident investigation.</p>
+          </div>
+
+          <!-- Impact -->
+          <div>
+            <%= form.label :impact, class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.select :impact, 
+                options_for_select([
+                  ["Minor", "minor"],
+                  ["Major", "major"],
+                  ["Critical", "critical"],
+                  ["Maintenance", "maintenance"]
+                ], @incident.impact),
+                {},
+                { class: "form-select", required: true } %>
+            <p class="mt-1 text-xs text-gray-500">Severity of the impact on services.</p>
+          </div>
+        </div>
+
+        <!-- Components Affected -->
+        <% if @available_components.any? %>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">Affected Components</label>
+            <div class="space-y-2">
+              <% @available_components.each do |component| %>
+                <div class="flex items-center">
+                  <%= check_box_tag "component_ids[]", component.id, false, 
+                      id: "component_#{component.id}", 
+                      class: "form-checkbox" %>
+                  <%= label_tag "component_#{component.id}", component.name, 
+                      class: "ml-2 text-sm text-gray-700" %>
+                </div>
+              <% end %>
+            </div>
+            <p class="mt-2 text-xs text-gray-500">Select all components that are affected by this incident.</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-between pt-6">
+      <%= link_to "Cancel", incidents_path, 
+          class: "btn-secondary" %>
+      <%= form.submit "Create Incident", 
+          class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+// Auto-update components when status page changes
+document.addEventListener('DOMContentLoaded', function() {
+  const statusPageSelect = document.getElementById('incident_status_page_id');
+  if (statusPageSelect) {
+    statusPageSelect.addEventListener('change', function() {
+      // In a real app, you might want to fetch components via AJAX
+      // For now, we'll redirect to reload the form with the correct components
+      if (this.value) {
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('status_page_id', this.value);
+        window.location.href = newUrl.toString();
+      }
+    });
+  }
+});
+</script>

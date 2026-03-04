@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= @status_page.name %> - Status</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= @status_page.description.presence || "#{@status_page.name} system status and incident reports" %>">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    
+    <!-- Turbo Stream connection for real-time updates -->
+    <%= turbo_stream_from "status_page_#{@status_page.slug}" %>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Auto-refresh every 60 seconds -->
+    <meta http-equiv="refresh" content="60">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<%= public_status_page_url(@status_page.slug) %>">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="<%= @status_page.name %> - Status">
+    <meta property="og:description" content="<%= @status_page.description.presence || "#{@status_page.name} system status and incident reports" %>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= public_status_page_url(@status_page.slug) %>">
+    <meta property="og:site_name" content="ups.dev">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<%= @status_page.name %> - Status">
+    <meta name="twitter:description" content="<%= @status_page.description.presence || "#{@status_page.name} system status and incident reports" %>">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "<%= @status_page.name %> - System Status",
+      "description": "<%= @status_page.description.presence || "#{@status_page.name} system status and incident reports" %>",
+      "url": "<%= public_status_page_url(@status_page.slug) %>",
+      "publisher": {
+        "@type": "Organization",
+        "name": "ups.dev",
+        "url": "https://ups.dev"
+      }
+    }
+    </script>
+    
+    <!-- Status Page Specific Styles -->
+    <style>
+      .status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+      }
+      
+      .status-operational { background-color: #10b981; }
+      .status-degraded-performance { background-color: #f59e0b; }
+      .status-partial-outage { background-color: #f97316; }
+      .status-major-outage { background-color: #ef4444; }
+      .status-maintenance { background-color: #3b82f6; }
+      
+      .overall-status {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      
+      .status-operational-text { color: #059669; }
+      .status-degraded-performance-text { color: #d97706; }
+      .status-partial-outage-text { color: #ea580c; }
+      .status-major-outage-text { color: #dc2626; }
+      .status-maintenance-text { color: #2563eb; }
+    </style>
+  </head>
+
+  <body class="bg-gray-50">
+    <div class="min-h-screen">
+      <!-- Header -->
+      <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900"><%= @status_page.name %></h1>
+              <% if @status_page.description.present? %>
+                <p class="text-gray-600 mt-1"><%= @status_page.description %></p>
+              <% end %>
+            </div>
+            <div class="text-right">
+              <div class="text-sm text-gray-500">Last updated</div>
+              <div class="text-sm font-medium text-gray-900" id="last-updated">
+                <%= time_tag(Time.current, Time.current.strftime("%B %d, %Y at %I:%M %p UTC")) %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <%= yield %>
+      </main>
+
+      <!-- Footer -->
+      <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div class="text-center text-sm text-gray-500">
+            <p>Powered by <a href="https://ups.dev" class="text-blue-600 hover:text-blue-800 font-medium">ups.dev</a> — Beautiful status pages for developers</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Auto-refresh timer -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const lastUpdated = document.getElementById('last-updated');
+      if (lastUpdated) {
+        setInterval(function() {
+          const now = new Date();
+          lastUpdated.innerHTML = now.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+            timeZone: 'UTC',
+            timeZoneName: 'short'
+          });
+        }, 1000);
+      }
+    });
+    </script>
+  </body>
+</html>
