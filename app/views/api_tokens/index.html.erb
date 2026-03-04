@@ -1,0 +1,122 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold leading-tight text-gray-900">API Tokens</h1>
+          <p class="mt-2 text-sm text-gray-600">
+            Manage API tokens for programmatic access to your status pages.
+          </p>
+        </div>
+        <%= link_to "Create Token", new_api_token_path, 
+              class: "bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md" %>
+      </div>
+
+      <!-- Token created flash message -->
+      <% if flash[:api_token] %>
+        <div class="mt-6 bg-green-50 border border-green-200 rounded-md p-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-green-800">
+                <%= flash[:api_token][:message] %>
+              </h3>
+              <div class="mt-2 text-sm text-green-700">
+                <strong>Token Name:</strong> <%= flash[:api_token][:name] %>
+              </div>
+              <div class="mt-2 p-3 bg-gray-900 rounded-md">
+                <code class="text-sm text-green-400 font-mono break-all">
+                  <%= flash[:api_token][:token] %>
+                </code>
+              </div>
+              <p class="mt-2 text-xs text-green-600">
+                Copy this token now - you won't be able to see it again.
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-md">
+        <% if @api_tokens.any? %>
+          <ul role="list" class="divide-y divide-gray-200">
+            <% @api_tokens.each do |token| %>
+              <li>
+                <div class="px-4 py-4 flex items-center justify-between">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                      <svg class="h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                      </svg>
+                    </div>
+                    <div class="ml-4">
+                      <div class="flex items-center">
+                        <h4 class="text-sm font-medium text-gray-900"><%= token.name %></h4>
+                      </div>
+                      <div class="mt-1 flex items-center text-sm text-gray-500">
+                        <span class="font-mono"><%= token.masked_token %></span>
+                        <span class="mx-2">•</span>
+                        <span>Created by <%= token.user.name %></span>
+                        <span class="mx-2">•</span>
+                        <span><%= time_ago_in_words(token.created_at) %> ago</span>
+                      </div>
+                      <% if token.last_used_at %>
+                        <div class="mt-1 text-xs text-gray-400">
+                          Last used <%= time_ago_in_words(token.last_used_at) %> ago
+                        </div>
+                      <% else %>
+                        <div class="mt-1 text-xs text-gray-400">
+                          Never used
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <%= link_to "Delete", api_token_path(token), 
+                          method: :delete,
+                          data: { 
+                            confirm: "Are you sure you want to delete the '#{token.name}' token? This action cannot be undone." 
+                          },
+                          class: "text-red-600 hover:text-red-900 text-sm font-medium" %>
+                  </div>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <div class="text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No API tokens</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Get started by creating your first API token.
+            </p>
+            <div class="mt-6">
+              <%= link_to "Create Token", new_api_token_path, 
+                    class: "bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Usage documentation -->
+      <div class="mt-8 bg-gray-50 rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Using API Tokens</h3>
+        <div class="prose prose-sm text-gray-600">
+          <p>Include your API token in requests using the Authorization header:</p>
+          <pre class="mt-2 bg-gray-900 text-green-400 p-3 rounded text-sm"><code>curl -H "Authorization: Bearer ups_live_abc123_xyz789" \
+  https://api.ups.dev/v1/status_pages</code></pre>
+          <p class="mt-4">
+            API tokens provide full access to your account's status pages, components, and incidents. 
+            Keep them secure and rotate them regularly.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,380 @@
+<% content_for :title, "ups.dev - Professional Status Pages & API Monitoring for Developers" %>
+<% content_for :description, "Create beautiful, real-time status pages for your APIs in under 2 minutes. Monitor uptime, communicate incidents, and build user trust. 14-day free trial, no credit card required." %>
+<% content_for :og_title, "ups.dev - Status Pages That Developers Actually Want to Look At" %>
+<% content_for :og_description, "Beautiful, real-time status monitoring for your APIs. Professional status pages that keep your users informed and build trust when things go wrong." %>
+
+<% content_for :head do %>
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ups.dev",
+    "description": "Professional status pages and API monitoring for developers. Create beautiful, real-time status monitoring in under 2 minutes.",
+    "url": "https://ups.dev",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "19",
+      "priceCurrency": "USD",
+      "priceValidUntil": "2027-12-31",
+      "description": "Professional status page monitoring starting at $19/month"
+    },
+    
+    "creator": {
+      "@type": "Organization",
+      "name": "ups.dev",
+      "url": "https://ups.dev"
+    },
+    "featureList": [
+      "Real-time status monitoring",
+      "Beautiful status pages",
+      "API uptime tracking",
+      "Incident communication",
+      "Email notifications",
+      "Custom domains",
+      "Developer-friendly API",
+      "2-minute setup"
+    ]
+  }
+  </script>
+<% end %>
+
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-text">ups.dev</span>
+        <span class="status-dot"></span>
+      </div>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <%= link_to "Sign in", sign_in_path, class: "btn-signin" %>
+        <%= link_to "Sign up", sign_up_path, class: "btn-signup" %>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Status pages that developers<br>
+        <span class="gradient-text">actually want to look at</span>
+      </h1>
+      <p class="hero-subtitle">
+        Beautiful, real-time status monitoring for your APIs. Create a professional status page in under 2 minutes that keeps your users informed and builds trust when things go wrong.
+      </p>
+
+      <div class="form-group">
+        <%= link_to "Start Your 14-Day Free Trial", sign_up_path, class: "submit-btn primary-cta" %>
+      </div>
+      <p class="form-note">
+        No credit card required • First status page live in under 2 minutes • Then just $19/month
+      </p>
+      
+      <div class="trust-indicators">
+        <div class="indicator">
+          <span class="number">2 min</span>
+          <span class="label">setup time</span>
+        </div>
+        <div class="indicator">
+          <span class="number">$19</span>
+          <span class="label">per month</span>
+        </div>
+        <div class="indicator">
+          <span class="number">14 day</span>
+          <span class="label">free trial</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mock Status Page Preview -->
+    <div class="preview-container">
+      <div class="browser-frame">
+        <div class="browser-header">
+          <div class="browser-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="browser-url">api.yourservice.com/status</div>
+        </div>
+        <div class="status-preview">
+          <div class="status-header">
+            <h3>API Status</h3>
+            <div class="overall-status">
+              <span class="status-dot operational"></span>
+              All Systems Operational
+            </div>
+          </div>
+          <div class="services-list">
+            <div class="service-item">
+              <div class="service-info">
+                <span class="service-name">Authentication API</span>
+                <span class="service-status operational">99.98% uptime</span>
+              </div>
+              <span class="status-dot operational"></span>
+            </div>
+            <div class="service-item">
+              <div class="service-info">
+                <span class="service-name">Data Processing</span>
+                <span class="service-status operational">99.95% uptime</span>
+              </div>
+              <span class="status-dot operational"></span>
+            </div>
+            <div class="service-item">
+              <div class="service-info">
+                <span class="service-name">Webhooks</span>
+                <span class="service-status operational">100% uptime</span>
+              </div>
+              <span class="status-dot operational"></span>
+            </div>
+          </div>
+          <div class="response-times">
+            <div class="metric">
+              <span class="metric-label">Avg Response Time</span>
+              <span class="metric-value">127ms</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Last Updated</span>
+              <span class="metric-value">2 seconds ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <h2 class="features-title">Everything you need for beautiful status monitoring</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Real-time Updates</h3>
+        <p>Live status updates with WebSocket connections. Your users see issues as they happen, not after they're fixed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Beautiful Design</h3>
+        <p>Status pages that match your brand. Clean, modern interfaces that developers and users actually want to visit.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <h3>Custom Domains</h3>
+        <p>Host on your own domain. status.yourapp.com with full SSL support and CDN acceleration.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3>API-Driven</h3>
+        <p>Automate everything. Update status, post incidents, and manage components programmatically with our REST API.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Incident Management</h3>
+        <p>Track issues from detection to resolution. Post-mortem templates and automated notifications keep everyone informed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Analytics & Insights</h3>
+        <p>Understand your uptime patterns. Historical data, SLA tracking, and performance metrics in beautiful dashboards.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="pricing">
+    <h2 class="pricing-title">Simple, transparent pricing</h2>
+    <p class="pricing-subtitle">Choose the plan that scales with your business. Start free, upgrade when you're ready.</p>
+    
+    <div class="pricing-grid">
+      <!-- Free Plan -->
+      <div class="pricing-card">
+        <div class="plan-header">
+          <h3 class="plan-name">Starter</h3>
+          <div class="plan-price">
+            <span class="price">$0</span>
+            <span class="period">/month</span>
+          </div>
+          <p class="plan-description">Perfect for getting started</p>
+        </div>
+        <ul class="plan-features">
+          <li>1 status page</li>
+          <li>Up to 5 components</li>
+          <li>Basic incident management</li>
+          <li>Email notifications</li>
+          <li>ups.dev subdomain</li>
+        </ul>
+        <div class="plan-cta">
+          <%= link_to "Start Free", sign_up_path, class: "btn-outline" %>
+        </div>
+      </div>
+
+      <!-- Pro Plan -->
+      <div class="pricing-card featured">
+        <div class="plan-badge">Most Popular</div>
+        <div class="plan-header">
+          <h3 class="plan-name">Professional</h3>
+          <div class="plan-price">
+            <span class="price">$19</span>
+            <span class="period">/month</span>
+          </div>
+          <p class="plan-description">For growing teams and businesses</p>
+        </div>
+        <ul class="plan-features">
+          <li>5 status pages</li>
+          <li>Unlimited components</li>
+          <li>Advanced incident management</li>
+          <li>Email + SMS notifications</li>
+          <li>Custom domain & SSL</li>
+          <li>Subscriber management</li>
+          <li>Advanced analytics</li>
+          <li>API access</li>
+          <li>Priority support</li>
+        </ul>
+        <div class="plan-cta">
+          <%= link_to "Start 14-Day Free Trial", sign_up_path, class: "btn-primary" %>
+        </div>
+      </div>
+
+      <!-- Team Plan -->
+      <div class="pricing-card">
+        <div class="plan-header">
+          <h3 class="plan-name">Team</h3>
+          <div class="plan-price">
+            <span class="price">$99</span>
+            <span class="period">/month</span>
+          </div>
+          <p class="plan-description">For larger organizations</p>
+        </div>
+        <ul class="plan-features">
+          <li>Unlimited status pages</li>
+          <li>Unlimited components</li>
+          <li>Team collaboration</li>
+          <li>Advanced integrations</li>
+          <li>White-label branding</li>
+          <li>SLA monitoring</li>
+          <li>Custom analytics</li>
+          <li>Dedicated support</li>
+        </ul>
+        <div class="plan-cta">
+          <%= link_to "Start Free Trial", sign_up_path, class: "btn-outline" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="pricing-note">
+      <p>All plans include 14-day free trial • No setup fees • Cancel anytime</p>
+    </div>
+  </section>
+
+  <!-- Why ups.dev Section -->
+  <section class="testimonials">
+    <h2 class="testimonials-title">Why developers choose ups.dev</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="testimonial-content">
+          <p><strong>StatusPage.io starts at $109/month</strong> for basic features. ups.dev gives you real-time updates, custom domains, API automation, and beautiful design — starting at $19/month.</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-info">
+            <strong>5x cheaper</strong>
+            <span>Same features, fraction of the price</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="testimonial-content">
+          <p><strong>Built with Rails 8 + SQLite.</strong> No complex infrastructure. Solid Queue for background jobs, Solid Cable for WebSockets, Solid Cache for speed. Modern stack, battle-tested foundations.</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-info">
+            <strong>Developer-first</strong>
+            <span>Clean API, simple deployment</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="testimonial-content">
+          <p><strong>Your status page, live in 2 minutes.</strong> Sign up, name your page, add your components — done. No sales calls, no enterprise onboarding, no waiting. Just a beautiful status page, ready to go.</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-info">
+            <strong>Zero friction</strong>
+            <span>From signup to live in under 2 minutes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <h2>Ready to upgrade your status page?</h2>
+    <p>Stop overpaying for status pages. Set up your first status page in under 2 minutes — free for 14 days.</p>
+    <div class="cta-buttons">
+      <%= link_to "Start Your Free Trial", sign_up_path, class: "submit-btn primary" %>
+      <span class="cta-note">14 days free • No credit card required • Setup in 2 minutes</span>
+    </div>
+    
+    <div class="cta-features">
+      <div class="mini-feature">
+        <span class="feature-icon">⚡</span>
+        <span>2-minute setup</span>
+      </div>
+      <div class="mini-feature">
+        <span class="feature-icon">🔒</span>
+        <span>No credit card needed</span>
+      </div>
+      <div class="mini-feature">
+        <span class="feature-icon">📈</span>
+        <span>Starts at $19/month</span>
+      </div>
+      <div class="mini-feature">
+        <span class="feature-icon">💬</span>
+        <span>Priority support included</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <span class="logo-text">ups.dev</span>
+          <p>Beautiful status pages for developer APIs</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Product</h4>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="/wheneva-ai">Live Demo</a>
+          </div>
+          <div class="footer-column">
+            <h4>Compare</h4>
+            <a href="/compare/statuspage">vs Statuspage</a>
+            <a href="/compare/cachet">vs Cachet</a>
+            <a href="/compare/betteruptime">vs Better Uptime</a>
+          </div>
+          <div class="footer-column">
+            <h4>Use Cases</h4>
+            <a href="/use-cases/saas">SaaS Companies</a>
+            <a href="/use-cases/api-providers">API Providers</a>
+            <a href="/use-cases/indie-hackers">Indie Hackers</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <%= Date.current.year %> ups.dev. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

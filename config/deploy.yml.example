@@ -1,0 +1,34 @@
+# Kamal deployment configuration for ups
+# Copy this to config/deploy.yml and customize for your environment.
+
+service: ups
+image: your-registry-user/ups
+
+servers:
+  web:
+    - 1.2.3.4  # Your server IP
+
+proxy:
+  ssl: true
+  host: status.yourdomain.com
+
+registry:
+  server: ghcr.io
+  username: your-username
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+  clear:
+    HOST_URL: https://status.yourdomain.com
+    SOLID_QUEUE_IN_PUMA: true
+
+volumes:
+  - "ups_storage:/rails/storage"
+
+asset_path: /rails/public/assets
+
+builder:
+  arch: amd64  # or arm64 for ARM servers

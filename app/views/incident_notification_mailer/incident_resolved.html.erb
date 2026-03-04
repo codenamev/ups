@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Resolved: <%= @incident.title %></title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .header {
+        border-bottom: 2px solid #e5e7eb;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+      }
+      .incident {
+        background-color: #f0fff4;
+        border-left: 4px solid #10b981;
+        padding: 16px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+      }
+      .status-resolved {
+        background-color: #f0fff4;
+        color: #276749;
+      }
+      .impact-minor { color: #059669; }
+      .impact-major { color: #d97706; }
+      .impact-critical { color: #dc2626; }
+      .impact-maintenance { color: #3b82f6; }
+      .components {
+        margin: 16px 0;
+      }
+      .component {
+        background-color: #f9fafb;
+        padding: 8px 12px;
+        margin: 4px 0;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .duration {
+        background-color: #f3f4f6;
+        padding: 12px;
+        border-radius: 4px;
+        margin: 16px 0;
+        font-size: 14px;
+      }
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+        font-size: 12px;
+        color: #6b7280;
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #3b82f6;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        margin: 16px 0;
+      }
+      .resolved-notice {
+        background-color: #f0fff4;
+        border: 1px solid #86efac;
+        padding: 16px;
+        margin: 20px 0;
+        border-radius: 4px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1><%= @status_page.name %></h1>
+      <p>An incident has been resolved</p>
+    </div>
+
+    <div class="resolved-notice">
+      <h3 style="color: #10b981; margin-top: 0;">✅ Incident Resolved</h3>
+      <p>All systems are now operating normally.</p>
+    </div>
+
+    <div class="incident">
+      <h2><%= @incident.title %></h2>
+      
+      <p>
+        <strong>Final Status:</strong> 
+        <span class="status-badge status-resolved">
+          Resolved
+        </span>
+      </p>
+      
+      <p>
+        <strong>Impact:</strong> 
+        <span class="impact-<%= @incident.impact %>">
+          <%= @incident.impact.humanize %>
+        </span>
+      </p>
+
+      <% if @incident.components.any? %>
+        <div class="components">
+          <strong>Affected Components (now operational):</strong>
+          <% @incident.components.each do |component| %>
+            <div class="component">
+              <%= component.name %> - <span class="status-<%= component.status %>"><%= component.status.humanize %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="duration">
+        <strong>Incident Timeline:</strong><br>
+        Started: <%= @incident.started_at.strftime("%B %d, %Y at %I:%M %p %Z") %><br>
+        Resolved: <%= @incident.resolved_at.strftime("%B %d, %Y at %I:%M %p %Z") %><br>
+        <% 
+          duration = Time.zone.parse(@incident.resolved_at.to_s) - Time.zone.parse(@incident.started_at.to_s)
+          hours = (duration / 3600).to_i
+          minutes = ((duration % 3600) / 60).to_i
+        %>
+        Duration: 
+        <% if hours > 0 %>
+          <%= pluralize(hours, 'hour') %>
+          <% if minutes > 0 %>
+            and <%= pluralize(minutes, 'minute') %>
+          <% end %>
+        <% else %>
+          <%= pluralize(minutes, 'minute') %>
+        <% end %>
+      </div>
+
+      <% if @incident.message.present? %>
+        <p><strong>Initial Report:</strong></p>
+        <p><%= simple_format(@incident.message) %></p>
+      <% end %>
+    </div>
+
+    <a href="<%= status_page_url(@status_page) %>" class="btn">
+      View Status Page
+    </a>
+
+    <div class="footer">
+      <p>
+        Thank you for your patience during this incident.
+      </p>
+      <p>
+        You're receiving this notification because you subscribed to updates from <%= @status_page.name %>.
+      </p>
+      <p>
+        <a href="<%= @unsubscribe_url %>">Unsubscribe from these notifications</a>
+      </p>
+    </div>
+  </body>
+</html>

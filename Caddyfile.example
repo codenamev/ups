@@ -1,0 +1,29 @@
+# Caddy reverse proxy configuration for ups
+# Copy this to Caddyfile and replace with your domain
+
+# Replace with your actual domain
+status.yourdomain.com {
+    reverse_proxy ups:80
+    
+    # Optional: Basic security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security max-age=31536000;
+        # Prevent clickjacking
+        X-Frame-Options DENY
+        # Prevent content type sniffing
+        X-Content-Type-Options nosniff
+        # Enable XSS protection
+        X-XSS-Protection "1; mode=block"
+    }
+    
+    # Optional: Rate limiting
+    # rate_limit {
+    #     zone static_ip 100r/m
+    # }
+    
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+    }
+}

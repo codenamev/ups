@@ -1,0 +1,59 @@
+<!-- Recent Incidents -->
+<div class="bg-white rounded-lg shadow border" id="recent-incidents">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <h2 class="text-lg font-semibold text-gray-900">Recent Incidents</h2>
+  </div>
+  <% if recent_incidents.any? %>
+    <div class="divide-y divide-gray-200">
+      <% recent_incidents.each do |incident| %>
+        <div class="px-6 py-4" id="incident-<%= incident.id %>">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <h3 class="font-medium text-gray-900"><%= incident.title %></h3>
+              <% if incident.description.present? %>
+                <p class="text-sm text-gray-600 mt-1"><%= incident.description %></p>
+              <% end %>
+              <div class="flex items-center mt-2 text-sm text-gray-500">
+                <span><%= incident.created_at.strftime("%B %d, %Y at %I:%M %p UTC") %></span>
+                <% if incident.resolved_at.present? %>
+                  <span class="mx-2">•</span>
+                  <span class="text-green-600">Resolved</span>
+                <% end %>
+              </div>
+            </div>
+            <div class="ml-4">
+              <% case incident.status %>
+              <% when 'investigating' %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  Investigating
+                </span>
+              <% when 'identified' %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                  Identified
+                </span>
+              <% when 'monitoring' %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  Monitoring
+                </span>
+              <% when 'resolved' %>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Resolved
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="px-6 py-8 text-center">
+      <div class="text-green-600 mb-2">
+        <svg class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No Recent Incidents</h3>
+      <p class="text-gray-600">All systems have been running smoothly with no recent incidents to report.</p>
+    </div>
+  <% end %>
+</div>

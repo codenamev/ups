@@ -1,0 +1,29 @@
+<%= @status_page.name %>
+🔄 COMPONENT STATUS CHANGED
+
+<%= @component.name %>
+
+Status changed from <%= @old_status.humanize.upcase %> to <%= @new_status.humanize.upcase %>
+
+Updated at <%= Time.current.strftime("%B %d, %Y at %l:%M %p %Z") %>
+
+<% if @component.description.present? %>
+About this component:
+<%= @component.description %>
+
+<% end %>
+<% active_incidents = @component.incidents.active %>
+<% if active_incidents.any? %>
+Related Active Incidents:
+<% active_incidents.each do |incident| %>
+
+- <%= incident.title %>
+  <%= incident.impact.humanize %> impact • <%= incident.status.humanize %>
+<% end %>
+
+<% end %>
+View full status page: <%= status_page_url(@status_page) %>
+
+---
+You're receiving this because you're subscribed to <%= @status_page.name %> status updates.
+Unsubscribe: <%= @unsubscribe_url %>

@@ -1,0 +1,33 @@
+<!-- Components Status -->
+<% if components.any? %>
+  <div class="bg-white rounded-lg shadow border mb-8" id="components-status">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-900">System Status</h2>
+    </div>
+    <div class="divide-y divide-gray-200">
+      <% components.each do |component| %>
+        <div class="px-6 py-4 flex items-center justify-between" id="component-<%= component.id %>">
+          <div class="flex items-center">
+            <span class="status-indicator status-<%= component.status.gsub('_', '-') %>"></span>
+            <div>
+              <h3 class="font-medium text-gray-900"><%= component.name %></h3>
+              <% if component.description.present? %>
+                <p class="text-sm text-gray-600"><%= component.description %></p>
+              <% end %>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-sm font-medium text-gray-900 capitalize">
+              <%= component.status.humanize %>
+            </span>
+            <% if component.status != 'operational' %>
+              <div class="text-xs text-gray-500 mt-1">
+                Issues detected
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

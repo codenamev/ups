@@ -1,0 +1,14 @@
+production:
+  store: solid_cache
+  prefix: ups_dev
+  expires_in: 1.hour
+
+development:
+  store: solid_cache
+  prefix: ups_dev_dev
+  expires_in: 30.minutes
+
+test:
+  store: solid_cache
+  prefix: ups_dev_test
+  expires_in: 10.minutes

@@ -1,0 +1,69 @@
+# ups - Production Docker Compose
+# 
+# This is a complete setup for running ups in production with:
+# - Automatic SSL via Caddy reverse proxy
+# - Persistent volume for SQLite database and storage
+# - Health checks and auto-restart
+#
+# Usage:
+# 1. Copy this file to your server
+# 2. Create .env file with required variables (see .env.example)
+# 3. Run: docker compose up -d
+#
+# See README.md for environment variable documentation.
+
+services:
+  ups:
+    image: ghcr.io/codenamev/ups:main
+    container_name: ups
+    restart: unless-stopped
+    volumes:
+      - ups_storage:/rails/storage
+      - ups_db:/rails/storage/production.sqlite3
+    environment:
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - HOST_URL=${HOST_URL:-http://localhost:3000}
+      - SOLID_QUEUE_IN_PUMA=${SOLID_QUEUE_IN_PUMA:-true}
+      - WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # Internal port 80 (Thruster serves on 80 inside container)
+    # Don't expose directly - use reverse proxy below
+    expose:
+      - "80"
+    networks:
+      - ups_network
+
+  # Optional: Caddy reverse proxy with automatic SSL
+  # Remove this section if you're using your own reverse proxy
+  caddy:
+    image: caddy:2-alpine
+    container_name: ups_proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - ups_network
+    depends_on:
+      - ups
+    # Only start if Caddyfile exists
+    profiles:
+      - proxy
+
+volumes:
+  ups_storage:
+  ups_db:
+  caddy_data:
+  caddy_config:
+
+networks:
+  ups_network:
+    driver: bridge

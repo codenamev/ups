@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "ups.dev - Beautiful Status Pages for Developer APIs" %></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= content_for(:description) || "Create beautiful, real-time status pages for your APIs in under 2 minutes. Monitor uptime, communicate incidents, and build trust. Starting at $19/month." %>">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ups.dev">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<%= content_for(:canonical_url) || request.original_url.split('?').first %>">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ups.dev">
+    <meta property="og:title" content="<%= content_for(:og_title) || content_for(:title) || "ups.dev - Beautiful Status Pages for Developer APIs" %>">
+    <meta property="og:description" content="<%= content_for(:og_description) || content_for(:description) || "Create beautiful, real-time status pages for your APIs in under 2 minutes." %>">
+    <meta property="og:url" content="<%= content_for(:canonical_url) || request.original_url.split('?').first %>">
+    <meta property="og:image" content="<%= content_for(:og_image) || "#{request.base_url}/icon.png" %>">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= content_for(:og_title) || content_for(:title) || "ups.dev - Beautiful Status Pages for Developer APIs" %>">
+    <meta name="twitter:description" content="<%= content_for(:og_description) || content_for(:description) || "Create beautiful, real-time status pages for your APIs in under 2 minutes." %>">
+    <meta name="twitter:image" content="<%= content_for(:og_image) || "#{request.base_url}/icon.png" %>">
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+
+    <style>
+      /* Reset and base styles */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #0a0a0a;
+        color: #e5e5e5;
+        line-height: 1.6;
+        font-size: 16px;
+        overflow-x: hidden;
+      }
+
+      .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+      /* Header */
+      .header { padding: 20px 0; border-bottom: 1px solid #1a1a1a; }
+      .logo { display: flex; align-items: center; gap: 8px; }
+      .logo-text { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 600; color: #fff; }
+
+      .nav-links { display: flex; align-items: center; gap: 24px; margin-left: auto; }
+      .nav-links a { color: #a0a0a0; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s ease; }
+      .nav-links a:hover { color: #fff; }
+      .nav-links .btn-signin { color: #00ff88; }
+      .nav-links .btn-signup { 
+        padding: 8px 16px; 
+        background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+        color: #000; 
+        border-radius: 6px; 
+        font-weight: 600; 
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .nav-links .btn-signup:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3); 
+      }
+
+      .header-inner { display: flex; align-items: center; }
+
+      .status-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background-color: #00ff88;
+        box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+      /* Hero Section */
+      .hero {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+        align-items: center; padding: 80px 0; min-height: 80vh;
+      }
+      .hero-content { max-width: 500px; }
+      .hero-title { font-size: 48px; font-weight: 700; line-height: 1.1; margin-bottom: 20px; color: #fff; }
+      .gradient-text {
+        background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      }
+      .hero-subtitle { font-size: 18px; color: #a0a0a0; margin-bottom: 40px; line-height: 1.6; }
+
+      /* Forms */
+      .waitlist-form, .waitlist-form-cta { margin-bottom: 20px; }
+      .form-group { display: flex; gap: 12px; margin-bottom: 12px; }
+      .email-input {
+        flex: 1; padding: 16px 20px; border: 1px solid #2a2a2a; border-radius: 8px;
+        background-color: #1a1a1a; color: #fff; font-size: 16px; transition: border-color 0.2s ease;
+      }
+      .email-input:focus { outline: none; border-color: #00ff88; box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1); }
+      .email-input::placeholder { color: #666; }
+      .submit-btn {
+        padding: 16px 32px; background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+        color: #000; border: none; border-radius: 8px; font-weight: 600; font-size: 16px;
+        cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; white-space: nowrap;
+        text-decoration: none; display: inline-flex; align-items: center;
+      }
+      .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3); }
+      .form-note { font-size: 14px; color: #666; }
+
+      /* Preview Container */
+      .preview-container { display: flex; justify-content: center; align-items: center; }
+      .browser-frame {
+        width: 480px; background: #1a1a1a; border-radius: 12px; overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); border: 1px solid #2a2a2a;
+      }
+      .browser-header {
+        display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+        background: #151515; border-bottom: 1px solid #2a2a2a;
+      }
+      .browser-dots { display: flex; gap: 6px; }
+      .dot { width: 12px; height: 12px; border-radius: 50%; }
+      .dot.red { background: #ff5f56; }
+      .dot.yellow { background: #ffbd2e; }
+      .dot.green { background: #27ca3f; }
+      .browser-url {
+        font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #666;
+        background: #0f0f0f; padding: 6px 12px; border-radius: 6px; border: 1px solid #2a2a2a;
+      }
+      .status-preview { padding: 24px; }
+      .status-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+      .status-header h3 { color: #fff; font-size: 18px; font-weight: 600; }
+      .overall-status { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #00ff88; font-weight: 500; }
+      .status-dot.operational {
+        width: 8px; height: 8px; border-radius: 50%;
+        background-color: #00ff88; box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+      }
+      .services-list { margin-bottom: 20px; }
+      .service-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 12px 0; border-bottom: 1px solid #2a2a2a;
+      }
+      .service-item:last-child { border-bottom: none; }
+      .service-info { display: flex; flex-direction: column; gap: 4px; }
+      .service-name { color: #fff; font-weight: 500; font-size: 14px; }
+      .service-status { font-size: 12px; color: #00ff88; font-family: 'JetBrains Mono', monospace; }
+      .response-times { display: flex; gap: 32px; padding-top: 20px; border-top: 1px solid #2a2a2a; }
+      .metric { display: flex; flex-direction: column; gap: 4px; }
+      .metric-label { font-size: 12px; color: #666; }
+      .metric-value { font-size: 14px; color: #fff; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+      /* Trust Indicators */
+      .trust-indicators { 
+        display: flex; justify-content: center; gap: 40px; margin-top: 40px;
+        opacity: 0.8;
+      }
+      .indicator { 
+        display: flex; flex-direction: column; align-items: center; gap: 4px; 
+      }
+      .indicator .number { 
+        font-size: 24px; font-weight: 700; color: #00ff88; 
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .indicator .label { 
+        font-size: 12px; color: #666; text-transform: uppercase; 
+        letter-spacing: 0.5px;
+      }
+
+      /* Features Section */
+      .features { padding: 100px 0; }
+      .features-title {
+        text-align: center; font-size: 36px; font-weight: 700; color: #fff;
+        margin-bottom: 60px; max-width: 600px; margin-left: auto; margin-right: auto;
+      }
+      .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 32px; }
+      .feature-card {
+        padding: 32px; background: #1a1a1a; border: 1px solid #2a2a2a;
+        border-radius: 16px; transition: border-color 0.3s ease, transform 0.3s ease;
+      }
+      .feature-card:hover { border-color: #00ff88; transform: translateY(-4px); }
+      .feature-icon { font-size: 24px; margin-bottom: 16px; }
+      .feature-card h3 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 12px; }
+      .feature-card p { color: #a0a0a0; line-height: 1.6; }
+
+      /* Pricing Section */
+      .pricing { padding: 100px 0; background: rgba(0, 0, 0, 0.3); }
+      .pricing-title {
+        text-align: center; font-size: 36px; font-weight: 700; color: #fff;
+        margin-bottom: 16px;
+      }
+      .pricing-subtitle {
+        text-align: center; font-size: 18px; color: #a0a0a0; 
+        margin-bottom: 60px; max-width: 600px; margin-left: auto; margin-right: auto;
+      }
+      .pricing-grid { 
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+        gap: 32px; max-width: 1000px; margin: 0 auto; 
+      }
+      .pricing-card {
+        background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 16px;
+        padding: 32px; position: relative; transition: border-color 0.3s ease, transform 0.3s ease;
+      }
+      .pricing-card:hover { border-color: #00ff88; transform: translateY(-4px); }
+      .pricing-card.featured { 
+        border-color: #00ff88; transform: scale(1.05); 
+        background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, rgba(0, 204, 106, 0.05) 100%);
+      }
+      .plan-badge {
+        position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+        color: #000; padding: 6px 16px; border-radius: 16px; font-size: 12px; 
+        font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      }
+      .plan-header { text-align: center; margin-bottom: 32px; }
+      .plan-name { font-size: 24px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+      .plan-price { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-bottom: 8px; }
+      .plan-price .price { font-size: 48px; font-weight: 700; color: #00ff88; font-family: 'JetBrains Mono', monospace; }
+      .plan-price .period { font-size: 16px; color: #666; }
+      .plan-description { color: #a0a0a0; font-size: 14px; }
+      .plan-features { list-style: none; margin-bottom: 32px; }
+      .plan-features li { 
+        padding: 8px 0; color: #e5e5e5; position: relative; padding-left: 24px;
+        font-size: 14px;
+      }
+      .plan-features li::before { 
+        content: "✓"; position: absolute; left: 0; color: #00ff88; 
+        font-weight: 700;
+      }
+      .plan-cta .btn-primary, .plan-cta .btn-outline { 
+        display: block; text-align: center; padding: 16px 32px; border-radius: 8px;
+        font-weight: 600; text-decoration: none; transition: all 0.3s ease;
+        font-size: 16px; width: 100%;
+      }
+      .plan-cta .btn-primary { 
+        background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%); color: #000; 
+      }
+      .plan-cta .btn-primary:hover { 
+        transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3); 
+      }
+      .plan-cta .btn-outline { 
+        border: 1px solid #00ff88; color: #00ff88; background: transparent; 
+      }
+      .plan-cta .btn-outline:hover { 
+        background: #00ff88; color: #000; transform: translateY(-2px);
+      }
+      .pricing-note { 
+        text-align: center; margin-top: 40px; color: #666; font-size: 14px;
+      }
+
+      /* Testimonials Section */
+      .testimonials { padding: 100px 0; }
+      .testimonials-title {
+        text-align: center; font-size: 36px; font-weight: 700; color: #fff;
+        margin-bottom: 60px;
+      }
+      .testimonials-grid { 
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+        gap: 32px; max-width: 1000px; margin: 0 auto;
+      }
+      .testimonial {
+        background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 16px;
+        padding: 32px; transition: border-color 0.3s ease;
+      }
+      .testimonial:hover { border-color: #00ff88; }
+      .testimonial-content { margin-bottom: 24px; }
+      .testimonial-content p { 
+        color: #e5e5e5; font-size: 16px; line-height: 1.6; font-style: italic;
+      }
+      .testimonial-author .author-info strong { 
+        color: #fff; font-weight: 600; display: block; margin-bottom: 4px;
+      }
+      .testimonial-author .author-info span { 
+        color: #a0a0a0; font-size: 14px;
+      }
+
+      /* CTA Section */
+      .cta {
+        text-align: center; padding: 100px 40px;
+        background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, rgba(0, 204, 106, 0.05) 100%);
+        border-radius: 24px; border: 1px solid rgba(0, 255, 136, 0.1); margin: 60px 0;
+      }
+      .cta h2 { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+      .cta p { font-size: 18px; color: #a0a0a0; margin-bottom: 40px; }
+      .cta-buttons { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 32px; }
+      .cta-note { font-size: 14px; color: #a0a0a0; }
+      .cta-features { 
+        display: flex; justify-content: center; gap: 32px; margin-top: 32px;
+        opacity: 0.8;
+      }
+      .mini-feature { 
+        display: flex; align-items: center; gap: 8px; font-size: 14px; color: #a0a0a0;
+      }
+      .mini-feature .feature-icon { font-size: 16px; }
+      .waitlist-form-cta { display: flex; justify-content: center; gap: 12px; max-width: 400px; margin: 0 auto; }
+
+      /* Footer */
+      .footer { border-top: 1px solid #2a2a2a; padding: 60px 0 40px; }
+      .footer-content { display: flex; flex-direction: column; gap: 40px; }
+      .footer-main { display: grid; grid-template-columns: 1fr 2fr; gap: 60px; }
+      .footer-brand p { color: #666; margin-top: 8px; }
+      .footer-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+      .footer-column h4 { color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+      .footer-column a { display: block; color: #a0a0a0; text-decoration: none; padding: 4px 0; transition: color 0.2s ease; }
+      .footer-column a:hover { color: #00ff88; }
+      .footer-bottom { text-align: center; padding-top: 40px; border-top: 1px solid #2a2a2a; }
+      .footer-bottom p { color: #666; font-size: 14px; }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .hero { grid-template-columns: 1fr; gap: 40px; text-align: center; padding: 60px 0; }
+        .hero-title { font-size: 36px; }
+        .hero-content { max-width: 100%; }
+        .browser-frame { width: 100%; max-width: 400px; }
+        .form-group { flex-direction: column; }
+        .trust-indicators { flex-direction: row; gap: 24px; }
+        .features-grid { grid-template-columns: 1fr; }
+        .features-title { font-size: 28px; }
+        .pricing-grid { grid-template-columns: 1fr; }
+        .pricing-title { font-size: 28px; }
+        .testimonials-grid { grid-template-columns: 1fr; }
+        .testimonials-title { font-size: 28px; }
+        .cta-features { flex-wrap: wrap; gap: 16px; }
+        .footer-main { grid-template-columns: 1fr; gap: 40px; }
+        .footer-links { grid-template-columns: 1fr; gap: 32px; }
+        .waitlist-form-cta { flex-direction: column; }
+      }
+      @media (max-width: 480px) {
+        .container { padding: 0 16px; }
+        .hero-title { font-size: 28px; }
+        .hero-subtitle { font-size: 16px; }
+        .trust-indicators { gap: 16px; }
+        .features { padding: 60px 0; }
+        .pricing { padding: 60px 0; }
+        .testimonials { padding: 60px 0; }
+        .cta { padding: 60px 20px; }
+        .cta h2 { font-size: 24px; }
+        .cta-features { flex-direction: column; align-items: center; gap: 12px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <%= yield %>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Fade-in animation for elements as they come into view
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = '1';
+              entry.target.style.transform = 'translateY(0)';
+            }
+          });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .cta').forEach(el => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          observer.observe(el);
+        });
+
+        // Update "Last Updated" time in the mock status page
+        function updateLastUpdated() {
+          const els = document.querySelectorAll('.metric-value');
+          els.forEach(el => {
+            if (el.textContent.includes('seconds ago')) {
+              el.textContent = Math.floor(Math.random() * 10 + 1) + ' seconds ago';
+            }
+          });
+        }
+        setInterval(updateLastUpdated, 5000);
+
+        // Subtle floating animation for browser preview
+        const browserFrame = document.querySelector('.browser-frame');
+        if (browserFrame) {
+          let startTime = Date.now();
+          function animate() {
+            const y = Math.sin((Date.now() - startTime) * 0.001) * 3;
+            browserFrame.style.transform = 'translateY(' + y + 'px)';
+            requestAnimationFrame(animate);
+          }
+          animate();
+        }
+
+        // Conversion tracking
+        function trackEvent(eventName, location) {
+          if (typeof gtag === 'function') {
+            gtag('event', eventName, {
+              event_category: 'engagement',
+              event_label: location,
+              value: 1
+            });
+          }
+        }
+
+        // Track CTA clicks
+        document.querySelectorAll('.submit-btn, .btn-primary, .primary-cta').forEach(button => {
+          button.addEventListener('click', function(e) {
+            const location = e.target.closest('.hero') ? 'hero' : 
+                           e.target.closest('.pricing') ? 'pricing' : 
+                           e.target.closest('.cta') ? 'bottom_cta' : 'other';
+            trackEvent('cta_click', location);
+          });
+        });
+
+        // Track pricing card interactions
+        document.querySelectorAll('.pricing-card').forEach(card => {
+          card.addEventListener('mouseenter', function(e) {
+            const planName = e.target.querySelector('.plan-name')?.textContent?.toLowerCase() || 'unknown';
+            trackEvent('pricing_hover', planName);
+          });
+        });
+
+        // Track feature engagement
+        document.querySelectorAll('.feature-card').forEach(card => {
+          card.addEventListener('click', function(e) {
+            const featureName = e.target.querySelector('h3')?.textContent?.toLowerCase().replace(' ', '_') || 'unknown';
+            trackEvent('feature_click', featureName);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

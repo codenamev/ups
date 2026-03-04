@@ -1,0 +1,43 @@
+<%= @status_page.name %>
+===============================================
+
+✅ INCIDENT RESOLVED: <%= @incident.title %>
+
+All systems are now operating normally.
+
+Final Status: Resolved
+Impact: <%= @incident.impact.humanize %>
+<% if @incident.components.any? -%>
+
+Affected Components (now operational):
+<% @incident.components.each do |component| -%>
+  • <%= component.name %> - <%= component.status.humanize %>
+<% end -%>
+<% end -%>
+
+Incident Timeline:
+Started: <%= @incident.started_at.strftime("%B %d, %Y at %I:%M %p %Z") %>
+Resolved: <%= @incident.resolved_at.strftime("%B %d, %Y at %I:%M %p %Z") %>
+<% 
+  duration = Time.zone.parse(@incident.resolved_at.to_s) - Time.zone.parse(@incident.started_at.to_s)
+  hours = (duration / 3600).to_i
+  minutes = ((duration % 3600) / 60).to_i
+%>
+Duration: <% if hours > 0 %><%= pluralize(hours, 'hour') %><% if minutes > 0 %> and <%= pluralize(minutes, 'minute') %><% end %><% else %><%= pluralize(minutes, 'minute') %><% end %>
+<% if @incident.message.present? -%>
+
+Initial Report:
+<%= @incident.message %>
+<% end -%>
+
+View the full status page:
+<%= status_page_url(@status_page) %>
+
+===============================================
+
+Thank you for your patience during this incident.
+
+You're receiving this notification because you subscribed to updates from <%= @status_page.name %>.
+
+To unsubscribe from these notifications:
+<%= @unsubscribe_url %>

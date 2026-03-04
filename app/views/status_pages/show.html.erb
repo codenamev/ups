@@ -1,0 +1,130 @@
+<%# Status Page Show %>
+<div class="flex justify-between items-start mb-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900"><%= @status_page.name %></h1>
+    <% if @status_page.description.present? %>
+      <p class="text-gray-600 mt-2"><%= @status_page.description %></p>
+    <% end %>
+    <div class="mt-3 flex items-center space-x-4">
+      <div class="text-sm text-gray-500">
+        Public URL: 
+        <%= link_to public_status_page_url(@status_page.slug), public_status_page_url(@status_page.slug), 
+            target: "_blank", 
+            class: "text-blue-600 hover:text-blue-800 font-mono" %>
+      </div>
+      <div class="text-sm text-gray-500">
+        <%= pluralize(@components.count, 'component') %>
+      </div>
+    </div>
+  </div>
+  <div class="flex space-x-3">
+    <%= link_to "View Public Page", public_status_page_url(@status_page.slug), 
+        target: "_blank", 
+        class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50" %>
+    <%= link_to "Edit Status Page", edit_status_page_path(@status_page), 
+        class: "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50" %>
+  </div>
+</div>
+
+<!-- Components Section -->
+<div class="bg-white rounded-lg shadow border mb-8">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <div class="flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-900">Components</h2>
+      <%= link_to "Add Component", new_status_page_component_path(@status_page), 
+          class: "inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700",
+          data: { turbo_frame: "component_form" } %>
+    </div>
+  </div>
+  
+  <div class="p-6">
+    <%= turbo_frame_tag "component_form" %>
+    
+    <% if @components.any? %>
+      <div id="components_list" class="space-y-4">
+        <% @components.each do |component| %>
+          <%= turbo_frame_tag component do %>
+            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+              <div class="flex items-center space-x-4">
+                <div class="w-3 h-3 rounded-full <%= component_status_color(component.status) %>"></div>
+                <div>
+                  <h3 class="font-medium text-gray-900"><%= component.name %></h3>
+                  <% if component.description.present? %>
+                    <p class="text-sm text-gray-600"><%= component.description %></p>
+                  <% end %>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_badge_class(component.status) %>">
+                  <%= component.status.humanize %>
+                </span>
+                <div class="flex space-x-2">
+                  <%= link_to "Edit", edit_status_page_component_path(@status_page, component), 
+                      class: "text-blue-600 hover:text-blue-800 text-sm font-medium",
+                      data: { turbo_frame: "component_form" } %>
+                  <%= button_to "Delete", [@status_page, component], method: :delete,
+                      data: { 
+                        confirm: "Are you sure you want to delete '#{component.name}'?",
+                        turbo: true
+                      },
+                      class: "text-red-600 hover:text-red-800 text-sm font-medium bg-transparent border-0 p-0" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-12" id="no_components">
+        <div class="mx-auto h-24 w-24 text-gray-400">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+        </div>
+        <h3 class="mt-4 text-lg font-medium text-gray-900">No components yet</h3>
+        <p class="mt-2 text-gray-600">Add components to track the status of your services.</p>
+        <div class="mt-6">
+          <%= link_to "Add First Component", new_status_page_component_path(@status_page), 
+              class: "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700",
+              data: { turbo_frame: "component_form" } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Recent Incidents Section -->
+<div class="bg-white rounded-lg shadow border">
+  <div class="px-6 py-4 border-b border-gray-200">
+    <div class="flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-900">Recent Incidents</h2>
+      <%= link_to "Manage Incidents", status_page_incidents_path(@status_page), 
+          class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+    </div>
+  </div>
+  
+  <div class="p-6">
+    <% if @recent_incidents.any? %>
+      <div class="space-y-4">
+        <% @recent_incidents.each do |incident| %>
+          <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+            <div>
+              <h3 class="font-medium text-gray-900"><%= incident.name %></h3>
+              <p class="text-sm text-gray-600 mt-1">
+                <%= incident.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+              </p>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= status_badge_class(incident.status) %>">
+              <%= incident.status.humanize %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-8">
+        <h3 class="text-lg font-medium text-gray-900">No incidents</h3>
+        <p class="text-gray-600 mt-2">Great! No recent incidents to report.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

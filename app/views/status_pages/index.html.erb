@@ -1,0 +1,82 @@
+<%# Status Pages Index %>
+<div class="flex justify-between items-center mb-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Status Pages</h1>
+    <p class="text-gray-600">Manage your status pages and their visibility.</p>
+  </div>
+  <%= link_to "New Status Page", new_status_page_path, class: "inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+</div>
+
+<% if @status_pages.any? %>
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <% @status_pages.each do |status_page| %>
+      <div class="bg-white rounded-lg shadow border hover:shadow-lg transition-shadow">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-gray-900">
+              <%= link_to status_page.name, status_page, class: "hover:text-blue-600" %>
+            </h3>
+            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+              <%= pluralize(status_page.components.visible.count, 'component') %>
+            </span>
+          </div>
+          
+          <% if status_page.description.present? %>
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2"><%= status_page.description %></p>
+          <% end %>
+          
+          <div class="mb-4">
+            <div class="text-sm text-gray-500 mb-1">Public URL:</div>
+            <code class="text-xs bg-gray-100 px-2 py-1 rounded text-gray-800">
+              <%= public_status_page_url(status_page.slug) %>
+            </code>
+          </div>
+
+          <% if status_page.components.visible.any? %>
+            <div class="mb-4">
+              <div class="text-sm text-gray-500 mb-2">Component Status:</div>
+              <div class="space-y-1">
+                <% status_page.components.visible.by_position.limit(3).each do |component| %>
+                  <div class="flex items-center text-sm">
+                    <div class="w-2 h-2 rounded-full mr-2 <%= component_status_color(component.status) %>"></div>
+                    <span class="text-gray-700"><%= component.name %></span>
+                    <span class="ml-auto text-gray-500 capitalize"><%= component.status.humanize %></span>
+                  </div>
+                <% end %>
+                <% if status_page.components.visible.count > 3 %>
+                  <div class="text-xs text-gray-500">
+                    + <%= status_page.components.visible.count - 3 %> more components
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <div class="flex justify-between items-center pt-4 border-t">
+            <div class="flex space-x-2">
+              <%= link_to "View", status_page, class: "text-blue-600 hover:text-blue-800 font-medium text-sm" %>
+              <%= link_to "Edit", edit_status_page_path(status_page), class: "text-gray-600 hover:text-gray-800 font-medium text-sm" %>
+              <%= link_to "Public", public_status_page_url(status_page.slug), target: "_blank", class: "text-green-600 hover:text-green-800 font-medium text-sm" %>
+            </div>
+            <div class="text-xs text-gray-500">
+              Updated <%= time_ago_in_words(status_page.updated_at) %> ago
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-12">
+    <div class="mx-auto h-24 w-24 text-gray-400">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    </div>
+    <h3 class="mt-4 text-lg font-medium text-gray-900">No status pages yet</h3>
+    <p class="mt-2 text-gray-600">Get started by creating your first status page.</p>
+    <div class="mt-6">
+      <%= link_to "Create Status Page", new_status_page_path, class: "inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+    </div>
+  </div>
+<% end %>

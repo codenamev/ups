@@ -1,0 +1,173 @@
+#!/usr/bin/env ruby
+
+# bin/deploy - UPS.dev production deployment script
+# This script provides a simplified interface for Kamal deployments
+
+require "optparse"
+
+class DeployScript
+  def initialize
+    @options = {
+      action: :deploy,
+      verbose: false,
+      skip_push: false
+    }
+    parse_options!
+  end
+
+  def run
+    case @options[:action]
+    when :deploy
+      deploy
+    when :rollback
+      rollback
+    when :restart
+      restart
+    when :logs
+      logs
+    when :console
+      console
+    when :shell
+      shell
+    when :status
+      status
+    else
+      puts "Unknown action: #{@options[:action]}"
+      exit 1
+    end
+  end
+
+  private
+
+  def deploy
+    puts "🚀 Deploying UPS.dev to production..."
+    
+    # Pre-deployment checks
+    check_environment
+    check_git_status unless @options[:skip_push]
+    
+    # Run the deployment
+    run_kamal("kamal deploy#{verbose_flag}")
+    
+    puts "✅ Deployment complete! Check https://ups.dev"
+  end
+
+  def rollback
+    puts "🔄 Rolling back UPS.dev..."
+    run_kamal("kamal rollback#{verbose_flag}")
+    puts "✅ Rollback complete!"
+  end
+
+  def restart
+    puts "🔄 Restarting UPS.dev..."
+    run_kamal("kamal app restart#{verbose_flag}")
+    puts "✅ Restart complete!"
+  end
+
+  def logs
+    puts "📋 Showing logs for UPS.dev..."
+    run_kamal("kamal app logs -f")
+  end
+
+  def console
+    puts "🖥️  Opening Rails console..."
+    run_kamal("kamal app exec -i 'bin/rails console'")
+  end
+
+  def shell
+    puts "🐚 Opening shell..."
+    run_kamal("kamal app exec -i bash")
+  end
+
+  def status
+    puts "📊 Checking UPS.dev status..."
+    run_kamal("kamal app details")
+  end
+
+  def check_environment
+    required_env = %w[GITHUB_TOKEN]
+    missing = required_env.select { |var| ENV[var].nil? || ENV[var].empty? }
+    
+    if missing.any?
+      puts "❌ Missing required environment variables:"
+      missing.each { |var| puts "   - #{var}" }
+      puts "\nPlease set these variables before deploying."
+      exit 1
+    end
+
+    # Check if config/master.key exists
+    unless File.exist?("config/master.key")
+      puts "❌ Missing config/master.key"
+      puts "   Run: EDITOR=nano rails credentials:edit to create it"
+      exit 1
+    end
+  end
+
+  def check_git_status
+    # Check if we're on main/master branch
+    current_branch = `git branch --show-current`.strip
+    unless %w[main master].include?(current_branch)
+      puts "⚠️  Warning: You're not on main/master branch (currently on: #{current_branch})"
+      print "Continue? (y/N): "
+      exit 1 unless gets.chomp.downcase == "y"
+    end
+
+    # Check if there are uncommitted changes
+    unless `git status --porcelain`.strip.empty?
+      puts "⚠️  Warning: You have uncommitted changes"
+      print "Continue? (y/N): "
+      exit 1 unless gets.chomp.downcase == "y"
+    end
+
+    # Check if we're up to date with remote
+    `git fetch`
+    local = `git rev-parse @`.strip
+    remote = `git rev-parse @{u}`.strip
+    if local != remote
+      puts "⚠️  Warning: Your local branch is not up to date with remote"
+      print "Continue? (y/N): "
+      exit 1 unless gets.chomp.downcase == "y"
+    end
+  end
+
+  def run_kamal(command)
+    puts "Running: #{command}" if @options[:verbose]
+    system(command) || exit(1)
+  end
+
+  def verbose_flag
+    @options[:verbose] ? " --verbose" : ""
+  end
+
+  def parse_options!
+    OptionParser.new do |opts|
+      opts.banner = "Usage: bin/deploy [options] [action]"
+      
+      opts.on("-v", "--verbose", "Verbose output") do
+        @options[:verbose] = true
+      end
+      
+      opts.on("--skip-push", "Skip git push checks") do
+        @options[:skip_push] = true
+      end
+      
+      opts.on("-h", "--help", "Show this help") do
+        puts opts
+        puts ""
+        puts "Actions:"
+        puts "  deploy    - Deploy to production (default)"
+        puts "  rollback  - Rollback to previous version"
+        puts "  restart   - Restart the application"
+        puts "  logs      - Show application logs"
+        puts "  console   - Open Rails console"
+        puts "  shell     - Open shell on server"
+        puts "  status    - Show deployment status"
+        exit
+      end
+    end.parse!
+
+    @options[:action] = ARGV[0]&.to_sym || :deploy
+  end
+end
+
+DeployScript.new.run

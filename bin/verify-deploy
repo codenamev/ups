@@ -1,0 +1,183 @@
+#!/bin/bash
+
+# bin/verify-deploy - Verify UPS.dev production deployment
+# Validates a Kamal deployment with Let's Encrypt origin SSL behind Cloudflare proxy
+
+set -e
+
+echo "Verifying UPS.dev deployment..."
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Configuration
+DOMAIN=${1:-ups.dev}
+SERVER_IP="46.225.117.197"
+TIMEOUT=30
+
+# Helper functions
+check_success() {
+    echo -e "${GREEN}  PASS${NC} $1"
+}
+
+check_warning() {
+    echo -e "${YELLOW}  WARN${NC} $1"
+}
+
+check_fail() {
+    echo -e "${RED}  FAIL${NC} $1"
+}
+
+echo ""
+echo "Domain:    https://$DOMAIN"
+echo "Origin IP: $SERVER_IP"
+echo "Timeout:   ${TIMEOUT}s"
+echo ""
+
+ERRORS=0
+
+# 1. Check origin server responds on HTTPS (Let's Encrypt cert via Kamal proxy)
+echo "1. Testing origin server (direct IP, HTTPS)..."
+ORIGIN_CODE=$(curl -sk -o /dev/null -w "%{http_code}" -H "Host: $DOMAIN" "https://$SERVER_IP/up" --max-time $TIMEOUT 2>/dev/null || echo "000")
+if [ "$ORIGIN_CODE" == "200" ]; then
+    check_success "Origin health check responds 200 over HTTPS"
+else
+    # Fall back to HTTP check
+    ORIGIN_HTTP=$(curl -s -o /dev/null -w "%{http_code}" -H "Host: $DOMAIN" "http://$SERVER_IP/up" --max-time $TIMEOUT 2>/dev/null || echo "000")
+    if [ "$ORIGIN_HTTP" == "200" ]; then
+        check_warning "Origin responds on HTTP but not HTTPS (Let's Encrypt cert may not be provisioned yet)"
+    else
+        check_fail "Origin health check failed (HTTPS: $ORIGIN_CODE, HTTP: $ORIGIN_HTTP)"
+        ERRORS=$((ERRORS + 1))
+    fi
+fi
+
+# 2. Check origin Let's Encrypt certificate
+echo "2. Checking origin SSL certificate (Let's Encrypt)..."
+ORIGIN_ISSUER=$(echo | timeout $TIMEOUT openssl s_client -servername "$DOMAIN" -connect "$SERVER_IP:443" 2>/dev/null | openssl x509 -noout -issuer -dates 2>/dev/null || echo "")
+if echo "$ORIGIN_ISSUER" | grep -qi "Let's Encrypt"; then
+    check_success "Origin has Let's Encrypt certificate"
+    # Show expiry
+    EXPIRY=$(echo "$ORIGIN_ISSUER" | grep "notAfter" | cut -d= -f2)
+    if [ -n "$EXPIRY" ]; then
+        echo "         Expires: $EXPIRY"
+    fi
+elif [ -n "$ORIGIN_ISSUER" ]; then
+    check_warning "Origin cert present but not Let's Encrypt: $ORIGIN_ISSUER"
+else
+    check_fail "Could not retrieve origin SSL certificate from $SERVER_IP:443"
+    ERRORS=$((ERRORS + 1))
+fi
+
+# 3. Check HTTPS via Cloudflare
+echo "3. Testing HTTPS via Cloudflare..."
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://$DOMAIN" --max-time $TIMEOUT 2>/dev/null || echo "000")
+if [ "$HTTP_CODE" == "200" ]; then
+    check_success "HTTPS responds with 200 via Cloudflare"
+elif [ "$HTTP_CODE" == "525" ]; then
+    check_fail "Cloudflare 525 SSL Handshake Failed - origin cert may not be ready"
+    ERRORS=$((ERRORS + 1))
+elif [ "$HTTP_CODE" == "526" ]; then
+    check_fail "Cloudflare 526 Invalid SSL Certificate - check CF SSL mode is 'Full' (not 'Full Strict')"
+    ERRORS=$((ERRORS + 1))
+else
+    check_fail "HTTPS failed (got $HTTP_CODE)"
+    ERRORS=$((ERRORS + 1))
+fi
+
+# 4. Check HTTP -> HTTPS redirect
+echo "4. Testing HTTP -> HTTPS redirect..."
+REDIRECT=$(curl -s -o /dev/null -w "%{http_code}" "http://$DOMAIN" --max-time $TIMEOUT 2>/dev/null || echo "000")
+if [[ "$REDIRECT" == "301" || "$REDIRECT" == "302" || "$REDIRECT" == "307" || "$REDIRECT" == "308" ]]; then
+    check_success "HTTP redirects to HTTPS ($REDIRECT)"
+else
+    check_warning "HTTP did not redirect (got $REDIRECT) - enable 'Always Use HTTPS' in Cloudflare"
+fi
+
+# 5. Check Cloudflare-issued certificate (public-facing)
+echo "5. Checking public SSL certificate (Cloudflare edge)..."
+CF_ISSUER=$(echo | timeout $TIMEOUT openssl s_client -servername "$DOMAIN" -connect "$DOMAIN:443" 2>/dev/null | openssl x509 -noout -issuer 2>/dev/null || echo "")
+if echo "$CF_ISSUER" | grep -qi "cloudflare\|google\|digicert"; then
+    check_success "Public cert issued by Cloudflare/CDN provider"
+elif echo "$CF_ISSUER" | grep -qi "Let's Encrypt"; then
+    check_warning "Public cert is Let's Encrypt (Cloudflare proxy may not be enabled - check orange cloud)"
+else
+    check_warning "Public cert issuer: $CF_ISSUER"
+fi
+
+# 6. Check health endpoint via Cloudflare
+echo "6. Testing health endpoint..."
+HEALTH_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://$DOMAIN/up" --max-time $TIMEOUT 2>/dev/null || echo "000")
+if [ "$HEALTH_CODE" == "200" ]; then
+    check_success "Health endpoint /up responds 200"
+else
+    check_fail "Health endpoint /up failed (got $HEALTH_CODE)"
+    ERRORS=$((ERRORS + 1))
+fi
+
+# 7. Check Cloudflare and security headers
+echo "7. Checking Cloudflare and security headers..."
+HEADERS=$(curl -s -I "https://$DOMAIN" --max-time $TIMEOUT 2>/dev/null)
+
+if echo "$HEADERS" | grep -qi "cf-ray"; then
+    check_success "Cloudflare proxy active (cf-ray header present)"
+else
+    check_warning "cf-ray header missing - Cloudflare proxy may not be enabled"
+fi
+
+if echo "$HEADERS" | grep -qi "Strict-Transport-Security"; then
+    check_success "HSTS header present"
+else
+    check_warning "HSTS header missing - enable in Cloudflare Edge Certificates"
+fi
+
+if echo "$HEADERS" | grep -qi "X-Frame-Options\|content-security-policy"; then
+    check_success "Frame protection header present"
+else
+    check_warning "X-Frame-Options / CSP header missing"
+fi
+
+# 8. Check response time
+echo "8. Testing response time..."
+RESPONSE_TIME=$(curl -s -o /dev/null -w "%{time_total}" "https://$DOMAIN" --max-time $TIMEOUT 2>/dev/null || echo "0")
+if (( $(echo "$RESPONSE_TIME < 2.0" | bc -l 2>/dev/null || echo 0) )); then
+    check_success "Response time: ${RESPONSE_TIME}s"
+elif (( $(echo "$RESPONSE_TIME < 5.0" | bc -l 2>/dev/null || echo 0) )); then
+    check_warning "Response time: ${RESPONSE_TIME}s (slow)"
+else
+    check_fail "Response time: ${RESPONSE_TIME}s (very slow)"
+fi
+
+# 9. Check container status via Kamal
+echo "9. Checking container status..."
+if command -v kamal &> /dev/null; then
+    CONTAINER_STATUS=$(kamal app details 2>/dev/null | grep -i "state" | head -1)
+    if echo "$CONTAINER_STATUS" | grep -qi "running"; then
+        check_success "Container is running"
+    else
+        check_warning "Container status unclear"
+    fi
+else
+    check_warning "Kamal CLI not available, skipping container check"
+fi
+
+echo ""
+echo "---"
+echo "Summary:"
+echo "  Domain:        https://$DOMAIN"
+echo "  Origin:        $SERVER_IP (Let's Encrypt SSL via Kamal)"
+echo "  Edge:          Cloudflare (proxy + TLS termination)"
+echo "  CF SSL Mode:   Should be 'Full'"
+echo "  Response time: ${RESPONSE_TIME}s"
+echo "  Errors:        $ERRORS"
+echo ""
+
+if [ $ERRORS -gt 0 ]; then
+    echo -e "${RED}Deployment has $ERRORS error(s). Review the failures above.${NC}"
+    exit 1
+else
+    echo -e "${GREEN}Deployment verified successfully.${NC}"
+fi

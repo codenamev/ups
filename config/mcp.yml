@@ -1,0 +1,32 @@
+# ActionMCP Configuration
+
+shared:
+  authentication: ["api_token"]
+
+  server_instructions:
+    - "Use this server to manage status pages, components, and incidents for ups.dev"
+    - "Authenticate with a Bearer API token"
+
+  profiles:
+    primary:
+      tools:
+        - all
+      prompts:
+        - all
+      resources:
+        - all
+      options:
+        list_changed: false
+        logging_enabled: true
+        resources_subscribe: false
+
+development:
+  adapter: simple
+
+test:
+  # Tests set Current.user/account directly via setup blocks, bypassing gateway auth
+  authentication: ["none"]
+  adapter: test
+
+production:
+  adapter: simple

@@ -1,0 +1,27 @@
+<!-- Overall Status Banner -->
+<div class="bg-white rounded-lg shadow border mb-8" id="overall-status">
+  <div class="px-6 py-8 text-center">
+    <div class="overall-status status-<%= overall_status %>-text">
+      <span class="status-indicator status-<%= overall_status.gsub('_', '-') %>"></span>
+      <%= case overall_status
+          when 'operational'
+            'All Systems Operational'
+          when 'degraded_performance'
+            'Degraded Performance'
+          when 'partial_outage'
+            'Partial System Outage'
+          when 'major_outage'
+            'Major System Outage'  
+          when 'maintenance'
+            'Under Maintenance'
+          end %>
+    </div>
+    <p class="text-gray-600 mt-2">
+      <% if overall_status == 'operational' %>
+        All systems are currently running smoothly.
+      <% else %>
+        We are experiencing issues with some of our systems.
+      <% end %>
+    </p>
+  </div>
+</div>

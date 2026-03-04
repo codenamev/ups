@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; }
+      .header { background: #f8f9fa; padding: 20px; border-bottom: 3px solid #6c757d; }
+      .content { padding: 20px; }
+      .status-badge { display: inline-block; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; margin: 0 5px; }
+      .status-badge.operational { background: #28a745; color: white; }
+      .status-badge.degraded_performance { background: #ffc107; color: #000; }
+      .status-badge.partial_outage { background: #fd7e14; color: white; }
+      .status-badge.major_outage { background: #dc3545; color: white; }
+      .status-badge.maintenance { background: #6c757d; color: white; }
+      .status-change { background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 15px 0; text-align: center; }
+      .footer { background: #f8f9fa; padding: 15px; font-size: 12px; color: #6c757d; border-top: 1px solid #dee2e6; }
+      .button { display: inline-block; padding: 12px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+      .unsubscribe { color: #6c757d; font-size: 11px; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1><%= @status_page.name %></h1>
+      <h2>🔄 Component Status Changed</h2>
+    </div>
+
+    <div class="content">
+      <h3><%= @component.name %></h3>
+      
+      <div class="status-change">
+        <div style="margin-bottom: 10px;">Status changed from:</div>
+        <div>
+          <span class="status-badge <%= @old_status %>"><%= @old_status.humanize %></span>
+          →
+          <span class="status-badge <%= @new_status %>"><%= @new_status.humanize %></span>
+        </div>
+        <div style="margin-top: 10px; font-size: 14px; color: #6c757d;">
+          Updated at <%= Time.current.strftime("%B %d, %Y at %l:%M %p %Z") %>
+        </div>
+      </div>
+
+      <% if @component.description.present? %>
+        <div style="background: #fff; border: 1px solid #dee2e6; padding: 15px; border-radius: 4px; margin: 15px 0;">
+          <h4>About this component:</h4>
+          <%= simple_format(@component.description) %>
+        </div>
+      <% end %>
+
+      <% active_incidents = @component.incidents.active %>
+      <% if active_incidents.any? %>
+        <div style="margin: 20px 0;">
+          <h4>Related Active Incidents:</h4>
+          <% active_incidents.each do |incident| %>
+            <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 10px; margin: 5px 0;">
+              <strong><%= incident.title %></strong>
+              <div style="font-size: 12px; color: #6c757d;">
+                <%= incident.impact.humanize %> impact • <%= incident.status.humanize %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <p style="margin-top: 30px;">
+        <a href="<%= status_page_url(@status_page) %>" class="button">View Status Page</a>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>You're receiving this because you're subscribed to <%= @status_page.name %> status updates.</p>
+      <p class="unsubscribe">
+        <a href="<%= @unsubscribe_url %>">Unsubscribe from all notifications</a>
+      </p>
+    </div>
+  </body>
+</html>
