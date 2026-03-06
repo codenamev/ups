@@ -1,0 +1,145 @@
+<% content_for :title, "ups.dev vs #{@competitor[:name]} — Status Page Comparison" %>
+<% content_for :description, "Compare ups.dev with #{@competitor[:name]}. #{@competitor[:tagline]}. Beautiful status pages starting at $19/month vs #{@competitor[:price]}." %>
+<% content_for :og_title, "ups.dev vs #{@competitor[:name]} — Which Status Page Is Right for You?" %>
+<% content_for :og_description, "#{@competitor[:tagline]}. See how ups.dev compares to #{@competitor[:name]} on price, features, and developer experience." %>
+<% content_for :canonical_url, "https://ups.dev/compare/#{@competitor[:slug]}" %>
+
+<% content_for :head do %>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "ups.dev vs <%= @competitor[:name] %> Comparison",
+    "description": "Compare ups.dev with <%= @competitor[:name] %> for status page monitoring. <%= @competitor[:tagline] %>.",
+    "url": "https://ups.dev/compare/<%= @competitor[:slug] %>",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ups.dev",
+      "url": "https://ups.dev"
+    }
+  }
+  </script>
+<% end %>
+
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo" style="text-decoration: none;">
+        <span class="logo-text">ups.dev</span>
+        <span class="status-dot"></span>
+      </a>
+      <nav class="nav-links">
+        <a href="/#features">Features</a>
+        <a href="/#pricing">Pricing</a>
+        <%= link_to "Sign in", sign_in_path, class: "btn-signin" %>
+        <%= link_to "Sign up", sign_up_path, class: "btn-signup" %>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section style="padding: 80px 0 40px; text-align: center;">
+    <h1 class="hero-title" style="font-size: 42px; max-width: 700px; margin: 0 auto 20px;">
+      ups.dev vs <%= @competitor[:name] %>
+    </h1>
+    <p class="hero-subtitle" style="max-width: 600px; margin: 0 auto 40px;">
+      <%= @competitor[:tagline] %>. See how ups.dev compares on the features that matter to developers.
+    </p>
+    <div class="form-group" style="justify-content: center;">
+      <%= link_to "Try ups.dev Free", sign_up_path, class: "submit-btn primary-cta" %>
+    </div>
+  </section>
+
+  <!-- The Problem -->
+  <section style="padding: 40px 0 60px;">
+    <div style="max-width: 700px; margin: 0 auto;">
+      <h2 style="font-size: 28px; color: #fff; margin-bottom: 16px;">The problem with <%= @competitor[:name] %></h2>
+      <p style="color: #a0a0a0; margin-bottom: 24px; line-height: 1.7;">
+        <%= @competitor[:description] %>
+      </p>
+      <ul style="list-style: none; padding: 0;">
+        <% @competitor[:pain_points].each do |point| %>
+          <li style="padding: 10px 0 10px 24px; color: #e5e5e5; position: relative; border-bottom: 1px solid #1a1a1a;">
+            <span style="position: absolute; left: 0; color: #ef4444;">✗</span>
+            <%= point %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Comparison Table -->
+  <section style="padding: 60px 0;">
+    <h2 style="font-size: 28px; color: #fff; text-align: center; margin-bottom: 40px;">Feature-by-feature comparison</h2>
+    <div style="max-width: 800px; margin: 0 auto; background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 16px; overflow: hidden;">
+      <!-- Table Header -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 20px 24px; background: #151515; border-bottom: 1px solid #2a2a2a;">
+        <div style="font-weight: 600; color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Feature</div>
+        <div style="font-weight: 600; color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;"><%= @competitor[:name] %></div>
+        <div style="font-weight: 600; color: #00ff88; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">ups.dev</div>
+      </div>
+      <!-- Table Rows -->
+      <% @competitor[:ups_advantages].each_with_index do |row, i| %>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 16px 24px; border-bottom: 1px solid #2a2a2a; <%= 'background: rgba(0,255,136,0.02);' if i.even? %>">
+          <div style="color: #fff; font-weight: 500; font-size: 14px;"><%= row[:feature] %></div>
+          <div style="color: #a0a0a0; font-size: 14px;"><%= row[:competitor] %></div>
+          <div style="color: #00ff88; font-weight: 500; font-size: 14px;"><%= row[:ups] %></div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- Live Demo -->
+  <section style="padding: 60px 0; text-align: center;">
+    <h2 style="font-size: 28px; color: #fff; margin-bottom: 16px;">See it in action</h2>
+    <p style="color: #a0a0a0; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
+      Check out a live ups.dev status page. No signup required.
+    </p>
+    <a href="/wheneva-ai" style="display: inline-block; padding: 16px 32px; border: 1px solid #00ff88; color: #00ff88; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.background='#00ff88'; this.style.color='#000'" onmouseout="this.style.background='transparent'; this.style.color='#00ff88'">
+      View Live Demo →
+    </a>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Ready to switch from <%= @competitor[:name] %>?</h2>
+    <p>Set up your first status page in under 2 minutes. Free for 14 days, then just $19/month.</p>
+    <div class="cta-buttons">
+      <%= link_to "Start Your Free Trial", sign_up_path, class: "submit-btn primary" %>
+      <span class="cta-note">No credit card required • Cancel anytime</span>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <span class="logo-text">ups.dev</span>
+          <p>Beautiful status pages for developer APIs</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Compare</h4>
+            <a href="/compare/statuspage">vs Statuspage</a>
+            <a href="/compare/cachet">vs Cachet</a>
+            <a href="/compare/betteruptime">vs Better Uptime</a>
+          </div>
+          <div class="footer-column">
+            <h4>Product</h4>
+            <a href="/#features">Features</a>
+            <a href="/#pricing">Pricing</a>
+          </div>
+          <div class="footer-column">
+            <h4>Company</h4>
+            <a href="mailto:hello@ups.dev">Contact</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <%= Date.current.year %> ups.dev. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

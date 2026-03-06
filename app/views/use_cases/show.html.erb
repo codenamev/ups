@@ -1,0 +1,126 @@
+<% content_for :title, "#{@use_case[:title]} — ups.dev" %>
+<% content_for :description, "#{@use_case[:subheadline]} Beautiful, real-time status pages starting at $19/month." %>
+<% content_for :og_title, @use_case[:title] %>
+<% content_for :og_description, @use_case[:subheadline] %>
+<% content_for :canonical_url, "https://ups.dev/use-cases/#{@use_case[:slug]}" %>
+
+<% content_for :head do %>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "<%= @use_case[:title] %>",
+    "description": "<%= @use_case[:subheadline] %>",
+    "url": "https://ups.dev/use-cases/<%= @use_case[:slug] %>",
+    "publisher": {
+      "@type": "Organization",
+      "name": "ups.dev",
+      "url": "https://ups.dev"
+    }
+  }
+  </script>
+<% end %>
+
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="/" class="logo" style="text-decoration: none;">
+        <span class="logo-text">ups.dev</span>
+        <span class="status-dot"></span>
+      </a>
+      <nav class="nav-links">
+        <a href="/#features">Features</a>
+        <a href="/#pricing">Pricing</a>
+        <%= link_to "Sign in", sign_in_path, class: "btn-signin" %>
+        <%= link_to "Sign up", sign_up_path, class: "btn-signup" %>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section style="padding: 80px 0 40px; text-align: center;">
+    <h1 class="hero-title" style="font-size: 42px; max-width: 700px; margin: 0 auto 20px;">
+      <%= @use_case[:headline] %>
+    </h1>
+    <p class="hero-subtitle" style="max-width: 600px; margin: 0 auto 40px;">
+      <%= @use_case[:subheadline] %>
+    </p>
+    <div class="form-group" style="justify-content: center;">
+      <%= link_to "Start Free — No Credit Card", sign_up_path, class: "submit-btn primary-cta" %>
+    </div>
+  </section>
+
+  <!-- Content Sections -->
+  <% @use_case[:sections].each do |section| %>
+    <section style="padding: 40px 0;">
+      <div style="max-width: 700px; margin: 0 auto;">
+        <h2 style="font-size: 28px; color: #fff; margin-bottom: 24px;"><%= section[:heading] %></h2>
+        <ul style="list-style: none; padding: 0;">
+          <% section[:points].each do |point| %>
+            <li style="padding: 12px 0 12px 28px; color: #e5e5e5; position: relative; border-bottom: 1px solid #1a1a1a; line-height: 1.6;">
+              <span style="position: absolute; left: 0; color: #00ff88; font-weight: 700;">✓</span>
+              <%= point %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </section>
+  <% end %>
+
+  <!-- Live Demo -->
+  <section style="padding: 60px 0; text-align: center;">
+    <h2 style="font-size: 28px; color: #fff; margin-bottom: 16px;">See a live status page</h2>
+    <p style="color: #a0a0a0; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto;">
+      Check out a real ups.dev status page. No signup required.
+    </p>
+    <a href="/wheneva-ai" style="display: inline-block; padding: 16px 32px; border: 1px solid #00ff88; color: #00ff88; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.background='#00ff88'; this.style.color='#000'" onmouseout="this.style.background='transparent'; this.style.color='#00ff88'">
+      View Live Demo →
+    </a>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Ready to get started?</h2>
+    <p>Your first status page can be live in under 2 minutes. Start free — upgrade when you're ready.</p>
+    <div class="cta-buttons">
+      <%= link_to "Create Your Status Page", sign_up_path, class: "submit-btn primary" %>
+      <span class="cta-note">Free tier available • No credit card required • Cancel anytime</span>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <span class="logo-text">ups.dev</span>
+          <p>Beautiful status pages for developer APIs</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Use Cases</h4>
+            <a href="/use-cases/saas">SaaS Companies</a>
+            <a href="/use-cases/api-providers">API Providers</a>
+            <a href="/use-cases/indie-hackers">Indie Hackers</a>
+          </div>
+          <div class="footer-column">
+            <h4>Compare</h4>
+            <a href="/compare/statuspage">vs Statuspage</a>
+            <a href="/compare/cachet">vs Cachet</a>
+            <a href="/compare/betteruptime">vs Better Uptime</a>
+          </div>
+          <div class="footer-column">
+            <h4>Product</h4>
+            <a href="/#features">Features</a>
+            <a href="/#pricing">Pricing</a>
+            <a href="mailto:hello@ups.dev">Contact</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <%= Date.current.year %> ups.dev. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

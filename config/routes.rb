@@ -60,6 +60,14 @@ Rails.application.routes.draw do
     resources :accounts, only: [ :index, :show, :new, :create, :edit, :update ]
   end
 
+  # Comparison landing pages (SEO)
+  get "compare/:competitor", to: "comparisons#show", as: :comparison,
+      constraints: { competitor: /statuspage|cachet|betteruptime/ }
+
+  # Use-case landing pages (SEO)
+  get "use-cases/:use_case", to: "use_cases#show", as: :use_case,
+      constraints: { use_case: /saas|api-providers|indie-hackers/ }
+
   # SEO routes (must come before catchall status page routes)
   get "sitemap.xml", to: "sitemaps#index", defaults: { format: :xml }
 
