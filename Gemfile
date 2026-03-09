@@ -75,6 +75,3 @@ group :test do
 end
 
 gem "actionmcp", "~> 0.106.1"
-
-# UPS Pro engine for premium features
-gem "ups_pro", path: "../ups-pro"
