@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   # MCP (Model Context Protocol) server endpoint — powered by ActionMCP
   mount ActionMCP::Engine => "/mcp"
 
+  # UPS Pro engine for premium features
+  mount UpsPro::Engine => "/pro"
+
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 

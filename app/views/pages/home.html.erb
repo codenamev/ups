@@ -218,51 +218,46 @@
       <div class="pricing-card featured">
         <div class="plan-badge">Most Popular</div>
         <div class="plan-header">
-          <h3 class="plan-name">Professional</h3>
+          <h3 class="plan-name">Pro</h3>
           <div class="plan-price">
-            <span class="price">$19</span>
+            <span class="price">$10</span>
             <span class="period">/month</span>
           </div>
           <p class="plan-description">For growing teams and businesses</p>
         </div>
         <ul class="plan-features">
-          <li>5 status pages</li>
-          <li>Unlimited components</li>
-          <li>Advanced incident management</li>
-          <li>Email + SMS notifications</li>
-          <li>Custom domain & SSL</li>
-          <li>Subscriber management</li>
-          <li>Advanced analytics</li>
-          <li>API access</li>
+          <li>Unlimited status pages</li>
+          <li>Unlimited monitors</li>
+          <li>Custom domains</li>
+          <li>Advanced notifications</li>
+          <li>2-year history</li>
           <li>Priority support</li>
         </ul>
         <div class="plan-cta">
-          <%= link_to "Start 14-Day Free Trial", sign_up_path, class: "btn-primary" %>
+          <%= link_to "Start 14-Day Free Trial", ups_pro.new_subscription_path, class: "btn-primary" %>
         </div>
       </div>
 
-      <!-- Team Plan -->
+      <!-- Business Plan -->
       <div class="pricing-card">
         <div class="plan-header">
-          <h3 class="plan-name">Team</h3>
+          <h3 class="plan-name">Business</h3>
           <div class="plan-price">
-            <span class="price">$99</span>
+            <span class="price">$49</span>
             <span class="period">/month</span>
           </div>
           <p class="plan-description">For larger organizations</p>
         </div>
         <ul class="plan-features">
-          <li>Unlimited status pages</li>
-          <li>Unlimited components</li>
-          <li>Team collaboration</li>
-          <li>Advanced integrations</li>
-          <li>White-label branding</li>
-          <li>SLA monitoring</li>
-          <li>Custom analytics</li>
-          <li>Dedicated support</li>
+          <li>Everything in Pro</li>
+          <li>Up to 5 team members</li>
+          <li>Advanced permissions</li>
+          <li>SSO integration</li>
+          <li>Advanced analytics</li>
+          <li>99.95% SLA</li>
         </ul>
         <div class="plan-cta">
-          <%= link_to "Start Free Trial", sign_up_path, class: "btn-outline" %>
+          <%= link_to "Start Free Trial", ups_pro.new_subscription_path, class: "btn-outline" %>
         </div>
       </div>
     </div>
