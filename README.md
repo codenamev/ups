@@ -48,35 +48,31 @@ ups is a single Rails app with a SQLite database. No Redis, no Postgres, no exte
 
 ```bash
 docker run -d \
-  -p 3000:3000 \
+  -p 3000:80 \
   -v ups_storage:/rails/storage \
   -e RAILS_MASTER_KEY=your-master-key \
+  -e HOST_URL=https://status.yourdomain.com \
   ghcr.io/codenamev/ups:latest
 ```
 
+> **Docker issues?** See [Docker Troubleshooting Guide](docs/DOCKER_TROUBLESHOOTING.md)
+
 ### Docker Compose
 
-```yaml
-# docker-compose.yml
-services:
-  ups:
-    image: ghcr.io/codenamev/ups:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - ups_storage:/rails/storage
-    environment:
-      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
-      - HOST_URL=https://status.yourdomain.com
-    restart: unless-stopped
-
-volumes:
-  ups_storage:
-```
-
 ```bash
-RAILS_MASTER_KEY=your-key docker compose up -d
+# Copy the included docker-compose.yml and .env.example
+cp .env.example .env
+# Edit .env with your configuration
+nano .env
+
+# Start with reverse proxy (includes Caddy for SSL)
+docker compose --profile proxy up -d
+
+# Or start just the ups service
+docker compose up -d
 ```
+
+See the included [`docker-compose.yml`](docker-compose.yml) for a complete setup with SSL, health checks, and optional reverse proxy.
 
 ### From Source
 
