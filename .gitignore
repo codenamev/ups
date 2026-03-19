@@ -40,3 +40,7 @@
 # Ignore CI artifacts
 /coverage
 /vendor/bundle
+
+# Ignore Claude Code local files
+.claude/memory.sqlite3
+.claude/settings.local.json
