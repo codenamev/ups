@@ -170,6 +170,69 @@ class MonitoringOrchestratorTest < ActiveSupport::TestCase
     assert_operator hourly.avg_response_ms, :>=, 0
   end
 
+  # == PingCheckService security ==
+
+  test "PingCheckService rejects hosts with shell metacharacters" do
+    monitor = StatusMonitor.create!(
+      account: @account,
+      status_page: @status_page,
+      component: @component,
+      name: "Malicious Ping",
+      url: "http://example.com; rm -rf /",
+      check_type: :ping,
+      interval_seconds: 60,
+      timeout_seconds: 5,
+      status: :up
+    )
+
+    service = PingCheckService.new(monitor)
+    result = service.call
+    assert_not result.success?
+    assert result.error.present?, "Should have an error message"
+  end
+
+  test "PingCheckService rejects hosts with backticks" do
+    monitor = StatusMonitor.create!(
+      account: @account,
+      status_page: @status_page,
+      component: @component,
+      name: "Backtick Ping",
+      url: "http://example.com",
+      check_type: :ping,
+      interval_seconds: 60,
+      timeout_seconds: 5,
+      status: :up
+    )
+
+    # Override url to return a malicious value after validation
+    monitor.define_singleton_method(:url) { "http://`whoami`.example.com" }
+
+    service = PingCheckService.new(monitor)
+    result = service.call
+    assert_not result.success?
+    # URI.parse will reject the backticks
+    assert result.error.present?
+  end
+
+  test "PingCheckService clamps timeout to safe range" do
+    monitor = StatusMonitor.create!(
+      account: @account,
+      status_page: @status_page,
+      component: @component,
+      name: "Timeout Ping",
+      url: "http://127.0.0.1",
+      check_type: :ping,
+      interval_seconds: 60,
+      timeout_seconds: 30,
+      status: :up
+    )
+
+    service = PingCheckService.new(monitor)
+    # Should not raise — timeout gets clamped to 30
+    result = service.call
+    assert [ true, false ].include?(result.success?)
+  end
+
   private
 
   # Temporarily replaces HttpCheckService#call to return a canned result

@@ -15,6 +15,18 @@ class NotificationService
     new.notify_component_status_change(component, old_status)
   end
 
+  def self.notify_maintenance_scheduled(status_update)
+    Rails.logger.info "Maintenance scheduled: #{status_update.title} for component #{status_update.component.name}"
+  end
+
+  def self.notify_maintenance_started(status_update)
+    Rails.logger.info "Maintenance started: #{status_update.title} for component #{status_update.component.name}"
+  end
+
+  def self.notify_maintenance_completed(status_update)
+    Rails.logger.info "Maintenance completed: #{status_update.title} for component #{status_update.component.name}"
+  end
+
   def notify_incident_created(incident)
     preferences = NotificationPreference.for_incident(incident, :incident_created)
     

@@ -24,7 +24,7 @@ class Api::V1::UsersController < Api::BaseController
       id: account.id,
       name: account.name,
       slug: account.slug,
-      plan: account.effective_plan,
+      plan: account.current_plan,
       status_pages_count: account.status_pages_count,
       components_count: account.components_count,
       monitors_count: account.monitors_count,

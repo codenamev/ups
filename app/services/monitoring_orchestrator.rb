@@ -1,3 +1,5 @@
+require "open3"
+
 class MonitoringOrchestrator
   def initialize(monitor)
     @monitor = monitor
@@ -226,12 +228,17 @@ class PingCheckService
 
   def call
     uri = URI.parse(@monitor.url)
-    result = system("ping -c 1 -W #{@monitor.timeout_seconds} #{uri.host} > /dev/null 2>&1")
+    host = uri.host
+
+    raise ArgumentError, "Invalid host" if host.blank? || host.match?(/[^a-zA-Z0-9.\-:]/)
+
+    timeout = @monitor.timeout_seconds.to_i.clamp(1, 30)
+    stdout, status = Open3.capture2("ping", "-c", "1", "-W", timeout.to_s, host)
 
     OpenStruct.new(
-      success?: result,
-      response_time_ms: 0, # Would need to parse ping output for actual time
-      error: result ? nil : "Ping failed"
+      success?: status.success?,
+      response_time_ms: parse_ping_time(stdout),
+      error: status.success? ? nil : "Ping failed"
     )
   rescue => error
     OpenStruct.new(
@@ -239,5 +246,15 @@ class PingCheckService
       response_time_ms: 0,
       error: error.message
     )
+  end
+
+  private
+
+  def parse_ping_time(output)
+    if output =~ /time[=<]([\d.]+)\s*ms/
+      $1.to_f.round(2)
+    else
+      0
+    end
   end
 end

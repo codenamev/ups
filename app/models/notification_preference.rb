@@ -8,11 +8,16 @@ class NotificationPreference < ApplicationRecord
   scope :global, -> { where(component_id: nil) }
   scope :component_specific, -> { where.not(component_id: nil) }
   scope :for_incident_type, ->(type) { where(type => true) }
-  VALID_SEVERITIES = %w[none minor major critical maintenance].freeze
+  SEVERITY_COLUMNS = {
+    "minor" => :severity_minor,
+    "major" => :severity_major,
+    "critical" => :severity_critical,
+    "maintenance" => :severity_maintenance
+  }.freeze
 
   scope :for_severity, ->(severity) {
-    severity = "none" unless VALID_SEVERITIES.include?(severity.to_s)
-    where("severity_#{severity}" => true)
+    column = SEVERITY_COLUMNS[severity.to_s]
+    column ? where(column => true) : all
   }
 
   def self.for_incident(incident, notification_type)
@@ -32,8 +37,8 @@ class NotificationPreference < ApplicationRecord
       global_prefs
     end
 
-    impact = VALID_SEVERITIES.include?(incident.impact.to_s) ? incident.impact : "none"
-    result.where("severity_#{impact}" => true)
+    column = SEVERITY_COLUMNS[incident.impact.to_s]
+    column ? result.where(column => true) : result
   end
 
   def self.for_component_change(component, notification_type = :component_status_change)

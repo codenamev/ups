@@ -49,6 +49,28 @@ class NotificationPreferenceTest < ActiveSupport::TestCase
     assert_not_includes NotificationPreference.global, component_pref
   end
 
+  test "for_severity scope returns preferences matching severity" do
+    pref = NotificationPreference.create!(subscriber: @subscriber, severity_critical: true, severity_minor: false)
+
+    assert_includes NotificationPreference.for_severity("critical"), pref
+    assert_not_includes NotificationPreference.for_severity("minor"), pref
+  end
+
+  test "for_severity scope returns all records for invalid severity" do
+    pref = NotificationPreference.create!(subscriber: @subscriber)
+
+    # Malicious input should return all (no filter), not interpolate into SQL
+    result = NotificationPreference.for_severity("'; DROP TABLE --")
+    assert_includes result, pref
+  end
+
+  test "for_severity scope handles nil gracefully" do
+    pref = NotificationPreference.create!(subscriber: @subscriber)
+
+    # nil severity returns all records (no severity filter applied)
+    assert_includes NotificationPreference.for_severity(nil), pref
+  end
+
   test "should scope component specific preferences" do
     global_pref = NotificationPreference.create!(subscriber: @subscriber)
     component_pref = NotificationPreference.create!(subscriber: @subscriber, component: @component)
