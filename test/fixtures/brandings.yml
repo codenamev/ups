@@ -2,14 +2,14 @@
 
 one:
   status_page: one
-  logo_url: MyString
-  primary_color: MyString
-  custom_domain: MyString
-  favicon_url: MyString
+  logo_url: https://example.com/logo.png
+  primary_color: "#FF5733"
+  custom_domain: status.example.com
+  favicon_url: https://example.com/favicon.ico
 
 two:
   status_page: two
-  logo_url: MyString
-  primary_color: MyString
-  custom_domain: MyString
-  favicon_url: MyString
+  logo_url: https://example.com/logo2.png
+  primary_color: "#00AAFF"
+  custom_domain: status.other.com
+  favicon_url: https://example.com/favicon2.ico

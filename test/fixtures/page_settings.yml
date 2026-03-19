@@ -2,14 +2,14 @@
 
 one:
   status_page: one
-  timezone: MyString
-  theme: MyString
-  custom_css: MyText
+  timezone: Eastern Time (US & Canada)
+  theme: light
+  custom_css: "body { font-family: sans-serif; }"
   maintenance_mode: false
 
 two:
   status_page: two
-  timezone: MyString
-  theme: MyString
-  custom_css: MyText
+  timezone: Pacific Time (US & Canada)
+  theme: dark
+  custom_css: ""
   maintenance_mode: false
