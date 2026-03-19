@@ -75,11 +75,11 @@ class Component < ApplicationRecord
     # Get all visible components except this one, plus this one with old status
     components = status_page.components.visible.where.not(id: id)
     statuses = components.pluck(:status)
-    
+
     # Add the old status of this component
     old_status = status_before_last_save
     statuses << old_status if old_status.present?
-    
+
     return "operational" if statuses.empty?
 
     statuses = statuses.uniq

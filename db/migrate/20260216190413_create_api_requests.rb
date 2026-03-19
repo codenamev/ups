@@ -7,8 +7,8 @@ class CreateApiRequests < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    
+
     add_index :api_requests, :created_at
-    add_index :api_requests, [:api_token_id, :created_at]
+    add_index :api_requests, [ :api_token_id, :created_at ]
   end
 end

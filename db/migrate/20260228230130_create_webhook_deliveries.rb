@@ -16,7 +16,7 @@ class CreateWebhookDeliveries < ActiveRecord::Migration[8.1]
     end
 
     add_index :webhook_deliveries, :idempotency_key, unique: true
-    add_index :webhook_deliveries, [:webhook_id, :event_type]
-    add_index :webhook_deliveries, [:status, :created_at]
+    add_index :webhook_deliveries, [ :webhook_id, :event_type ]
+    add_index :webhook_deliveries, [ :status, :created_at ]
   end
 end

@@ -26,7 +26,7 @@ class Incident < ApplicationRecord
   validates :status, :impact, presence: true
   validates :started_at, presence: true
   validates :resolved_at, presence: true, if: :status_resolved?
-  
+
   validate :resolved_at_after_started_at
 
   # Aliases for backward compatibility with tests
@@ -85,10 +85,10 @@ class Incident < ApplicationRecord
   def notify_incident_resolved
     NotificationService.notify_incident_resolved(self)
   end
-  
+
   def resolved_at_after_started_at
     return unless started_at.present? && resolved_at.present?
-    
+
     if resolved_at < started_at
       errors.add(:resolved_at, "must be after the incident started")
     end

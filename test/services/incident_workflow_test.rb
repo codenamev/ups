@@ -36,7 +36,7 @@ class IncidentWorkflowTest < ActiveSupport::TestCase
           result = workflow.create_with_components(
             title: "API Issues",
             impact: :major,
-            component_ids: [@component1.id, @component2.id],
+            component_ids: [ @component1.id, @component2.id ],
             initial_message: "Investigating API slowness"
           )
 
@@ -45,7 +45,7 @@ class IncidentWorkflowTest < ActiveSupport::TestCase
           assert_equal "major", result.impact
           assert_equal "investigating", result.status
           assert_not_nil result.started_at
-          assert_equal [@component1, @component2], result.components.sort_by(&:id)
+          assert_equal [ @component1, @component2 ], result.components.sort_by(&:id)
           assert_equal 1, result.incident_updates.count
           assert_equal "Investigating API slowness", result.incident_updates.first.content
         end
@@ -62,7 +62,7 @@ class IncidentWorkflowTest < ActiveSupport::TestCase
     workflow.create_with_components(
       title: "Critical Issue",
       impact: :critical,
-      component_ids: [@component1.id],
+      component_ids: [ @component1.id ],
       initial_message: "Service is down"
     )
 
@@ -80,7 +80,7 @@ class IncidentWorkflowTest < ActiveSupport::TestCase
     result = workflow.create_with_components(
       title: "Database Issues",
       impact: :minor,
-      component_ids: [@component1.id],
+      component_ids: [ @component1.id ],
       initial_message: "Slow queries detected"
     )
 
@@ -167,7 +167,7 @@ class IncidentWorkflowTest < ActiveSupport::TestCase
   end
 
   test "remove_component removes component and resets status" do
-    incident = create_incident_via_workflow(component_ids: [@component1.id, @component2.id])
+    incident = create_incident_via_workflow(component_ids: [ @component1.id, @component2.id ])
     workflow = IncidentWorkflow.new(incident, current_user: @user)
 
     assert_includes incident.components, @component1
@@ -203,7 +203,7 @@ class IncidentWorkflowTest < ActiveSupport::TestCase
 
   private
 
-  def create_incident_via_workflow(component_ids: [@component1.id])
+  def create_incident_via_workflow(component_ids: [ @component1.id ])
     workflow = IncidentWorkflow.new(@status_page.incidents.build(account: @account), current_user: @user)
     workflow.create_with_components(
       title: "Test Incident",

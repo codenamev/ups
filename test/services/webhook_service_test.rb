@@ -162,7 +162,7 @@ class WebhookServiceTest < ActiveSupport::TestCase
       last_retry_at: 10.minutes.ago
     )
 
-    assert_enqueued_with(job: DeliverWebhookJob, args: [delivery.id]) do
+    assert_enqueued_with(job: DeliverWebhookJob, args: [ delivery.id ]) do
       WebhookService.retry_failed_deliveries
     end
   end

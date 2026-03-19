@@ -4,7 +4,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "create registers new user and sends magic link" do
     email = "newuser@example.com"
 
-    assert_difference ['User.count', 'Account.count', 'AccountUser.count'], 1 do
+    assert_difference [ "User.count", "Account.count", "AccountUser.count" ], 1 do
       assert_emails 1 do
         post sessions_path, params: { email_address: email }
       end
@@ -23,7 +23,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "create sends magic link to existing user without duplicating" do
     existing_user = users(:one)
 
-    assert_no_difference ['User.count', 'Account.count', 'AccountUser.count'] do
+    assert_no_difference [ "User.count", "Account.count", "AccountUser.count" ] do
       assert_emails 1 do
         post sessions_path, params: { email_address: existing_user.email }
       end

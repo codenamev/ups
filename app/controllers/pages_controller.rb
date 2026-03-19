@@ -1,11 +1,11 @@
 class PagesController < ApplicationController
-  layout 'landing', only: [:home]
+  layout "landing", only: [ :home ]
 
   def home
     # Redirect authenticated users to their dashboard
     if user_signed_in?
       redirect_to dashboard_path
-      return
+      nil
     end
   end
 

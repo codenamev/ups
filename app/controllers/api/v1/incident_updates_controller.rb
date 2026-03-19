@@ -2,7 +2,7 @@
 class Api::V1::IncidentUpdatesController < Api::BaseController
   before_action :set_status_page
   before_action :set_incident
-  before_action :set_incident_update, only: [:show, :update, :destroy]
+  before_action :set_incident_update, only: [ :show, :update, :destroy ]
 
   def index
     updates = @incident.incident_updates.includes(:user).order(created_at: :desc)

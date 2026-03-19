@@ -93,7 +93,7 @@ class IncidentsControllerTest < ActionDispatch::IntegrationTest
         impact: "minor",
         status_page_id: @status_page.id
       },
-      component_ids: [@component.id]
+      component_ids: [ @component.id ]
     }
 
     assert_response :redirect
@@ -159,7 +159,7 @@ class IncidentsControllerTest < ActionDispatch::IntegrationTest
     # Add a component via update
     patch status_page_incident_url(@status_page, @incident), params: {
       incident: { title: @incident.title },
-      component_ids: [@component.id]
+      component_ids: [ @component.id ]
     }
 
     assert_response :redirect

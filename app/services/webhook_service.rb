@@ -1,6 +1,6 @@
 class WebhookService
   include ActiveSupport::Benchmarkable
-  
+
   def self.deliver_incident_created(incident)
     new.deliver_incident_created(incident)
   end
@@ -28,7 +28,7 @@ class WebhookService
   def deliver_incident_created(incident)
     deliver_webhooks(
       status_page: incident.status_page,
-      event_type: 'incident.created',
+      event_type: "incident.created",
       event_data: incident_payload(incident)
     )
   end
@@ -36,7 +36,7 @@ class WebhookService
   def deliver_incident_updated(incident)
     deliver_webhooks(
       status_page: incident.status_page,
-      event_type: 'incident.updated', 
+      event_type: "incident.updated",
       event_data: incident_payload(incident)
     )
   end
@@ -44,7 +44,7 @@ class WebhookService
   def deliver_incident_resolved(incident)
     deliver_webhooks(
       status_page: incident.status_page,
-      event_type: 'incident.resolved',
+      event_type: "incident.resolved",
       event_data: incident_payload(incident)
     )
   end
@@ -52,7 +52,7 @@ class WebhookService
   def deliver_component_status_changed(component, old_status)
     deliver_webhooks(
       status_page: component.status_page,
-      event_type: 'component.status_changed',
+      event_type: "component.status_changed",
       event_data: component_status_payload(component, old_status)
     )
   end
@@ -60,7 +60,7 @@ class WebhookService
   def deliver_page_overall_status_changed(status_page, old_status, new_status)
     deliver_webhooks(
       status_page: status_page,
-      event_type: 'page.overall_status_changed',
+      event_type: "page.overall_status_changed",
       event_data: page_status_payload(status_page, old_status, new_status)
     )
   end
@@ -75,7 +75,7 @@ class WebhookService
 
   def deliver_webhooks(status_page:, event_type:, event_data:)
     webhooks = status_page.webhooks.active.select { |w| w.subscribes_to?(event_type) }
-    
+
     webhooks.each do |webhook|
       delivery = create_webhook_delivery(webhook, event_type, event_data)
       DeliverWebhookJob.perform_later(delivery.id)
@@ -99,7 +99,7 @@ class WebhookService
     {
       event: {
         id: incident.id,
-        type: 'incident',
+        type: "incident",
         occurred_at: incident.started_at.iso8601
       },
       incident: {
@@ -125,7 +125,7 @@ class WebhookService
     {
       event: {
         id: SecureRandom.uuid,
-        type: 'component_status_change',
+        type: "component_status_change",
         occurred_at: Time.current.iso8601
       },
       component: {
@@ -148,7 +148,7 @@ class WebhookService
     {
       event: {
         id: SecureRandom.uuid,
-        type: 'page_overall_status_change',
+        type: "page_overall_status_change",
         occurred_at: Time.current.iso8601
       },
       status_page: {

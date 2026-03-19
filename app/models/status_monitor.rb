@@ -13,26 +13,26 @@ class StatusMonitor < ApplicationRecord
   validates :interval_seconds, numericality: { greater_than_or_equal_to: 30, less_than_or_equal_to: 86400 } # 30s to 1 day
   validates :timeout_seconds, numericality: { greater_than: 0, less_than: 60 }
   validates :expected_status_code, numericality: { greater_than: 99, less_than: 600 }, if: -> { check_type_http? || check_type_https? }
-  
+
   validate :timeout_less_than_interval
 
   scope :due_for_check, -> { where("last_checked_at IS NULL OR last_checked_at < ?", Time.current) }
   scope :active, -> { where.not(status: :unknown) }
-  
+
   def due_for_check?
     last_checked_at.nil? || last_checked_at < interval_seconds.seconds.ago
   end
-  
+
   def next_check_at
     return Time.current if last_checked_at.nil?
     last_checked_at + interval_seconds.seconds
   end
-  
+
   private
-  
+
   def timeout_less_than_interval
     return unless timeout_seconds.present? && interval_seconds.present?
-    
+
     if timeout_seconds >= interval_seconds
       errors.add(:timeout_seconds, "must be less than check interval")
     end

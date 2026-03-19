@@ -15,6 +15,6 @@ class CreateNotificationPreferences < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :notification_preferences, [:subscriber_id, :component_id], unique: true, name: 'index_notification_preferences_on_subscriber_and_component'
+    add_index :notification_preferences, [ :subscriber_id, :component_id ], unique: true, name: 'index_notification_preferences_on_subscriber_and_component'
   end
 end

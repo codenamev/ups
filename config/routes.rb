@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   # Unsubscribe routes
   get "unsubscribe/:token", to: "unsubscribe#show", as: :unsubscribe
   post "unsubscribe/:token", to: "unsubscribe#confirm", as: :unsubscribe_confirm
-  
+
   # MCP (Model Context Protocol) server endpoint — powered by ActionMCP
   mount ActionMCP::Engine => "/mcp"
 

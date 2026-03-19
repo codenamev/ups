@@ -10,7 +10,7 @@ class IncidentNotificationMailer < ApplicationMailer
     mail(
       to: subscriber.email,
       subject: "[#{@status_page.name}] New Incident: #{incident.title}",
-      template_name: 'incident_created'
+      template_name: "incident_created"
     )
   end
 
@@ -24,7 +24,7 @@ class IncidentNotificationMailer < ApplicationMailer
     mail(
       to: subscriber.email,
       subject: "[#{@status_page.name}] Incident Update: #{incident.title}",
-      template_name: 'incident_updated'
+      template_name: "incident_updated"
     )
   end
 
@@ -37,7 +37,7 @@ class IncidentNotificationMailer < ApplicationMailer
     mail(
       to: subscriber.email,
       subject: "[#{@status_page.name}] Incident Resolved: #{incident.title}",
-      template_name: 'incident_resolved'
+      template_name: "incident_resolved"
     )
   end
 

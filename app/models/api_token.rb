@@ -53,5 +53,4 @@ class ApiToken < ApplicationRecord
     # Return full token once (never stored)
     @full_token = "#{token_prefix}_#{suffix}"
   end
-
 end

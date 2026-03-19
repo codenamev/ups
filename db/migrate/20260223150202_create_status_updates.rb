@@ -12,9 +12,9 @@ class CreateStatusUpdates < ActiveRecord::Migration[8.1]
 
       t.timestamps
     end
-    
-    add_index :status_updates, [:component_id, :scheduled_for]
-    add_index :status_updates, [:account_id, :status]
+
+    add_index :status_updates, [ :component_id, :scheduled_for ]
+    add_index :status_updates, [ :account_id, :status ]
     add_index :status_updates, :scheduled_for
   end
 end

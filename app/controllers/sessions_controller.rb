@@ -1,7 +1,7 @@
 # Sessions controller for magic link authentication
 class SessionsController < ApplicationController
   include MagicLinkAuthentication
-  
+
   skip_before_action :authenticate_user!, only: [ :new, :create, :verify_magic_link ]
 
   def new
@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
       # Register new user or find existing user
       user = UserRegistrationService.register_or_find_user(email)
       email_sent = send_magic_link(user)
-      
+
       if email_sent
         redirect_to new_session_path, notice: "Check your email for a sign-in link"
       else
@@ -33,7 +33,7 @@ class SessionsController < ApplicationController
     if user
       start_new_session_for(user)
       user.update_last_sign_in!
-      
+
       redirect_to after_authentication_url, notice: "Welcome back!"
     else
       redirect_to new_session_path, alert: "That link is invalid or has expired"
@@ -56,7 +56,7 @@ class SessionsController < ApplicationController
 
   def after_authentication_url
     return session.delete(:return_to_url) if session[:return_to_url].present?
-    
+
     dashboard_path
   end
 

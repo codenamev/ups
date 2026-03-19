@@ -26,12 +26,12 @@ class User < ApplicationRecord
 
   # Get role for specific account
   def role_for_account(account)
-    account_users.find_by(account: account)&.role || 'member'
+    account_users.find_by(account: account)&.role || "member"
   end
 
   # Check if user is admin for account
   def admin_for?(account)
-    role_for_account(account) == 'admin'
+    role_for_account(account) == "admin"
   end
 
   # Get primary account (for single-account users)

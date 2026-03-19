@@ -13,8 +13,8 @@ class NotificationMailerTest < ActionMailer::TestCase
     mail = NotificationMailer.incident_created(@subscriber, @incident)
 
     assert_equal "[#{@status_page.name}] New Incident: #{@incident.title}", mail.subject
-    assert_equal [@subscriber.email], mail.to
-    assert_equal ["notifications@send.codenamev.com"], mail.from
+    assert_equal [ @subscriber.email ], mail.to
+    assert_equal [ "notifications@send.codenamev.com" ], mail.from
 
     assert_match @incident.title, mail.body.encoded
     assert_match @incident.impact.humanize, mail.body.encoded
@@ -25,7 +25,7 @@ class NotificationMailerTest < ActionMailer::TestCase
     mail = NotificationMailer.incident_updated(@subscriber, @incident)
 
     assert_equal "[#{@status_page.name}] Incident Update: #{@incident.title}", mail.subject
-    assert_equal [@subscriber.email], mail.to
+    assert_equal [ @subscriber.email ], mail.to
 
     assert_match @incident.title, mail.body.encoded
     assert_match "Incident Update", mail.body.encoded
@@ -36,7 +36,7 @@ class NotificationMailerTest < ActionMailer::TestCase
     mail = NotificationMailer.incident_resolved(@subscriber, @incident)
 
     assert_equal "[#{@status_page.name}] Incident Resolved: #{@incident.title}", mail.subject
-    assert_equal [@subscriber.email], mail.to
+    assert_equal [ @subscriber.email ], mail.to
 
     assert_match @incident.title, mail.body.encoded
     assert_match "Incident Resolved", mail.body.encoded
@@ -48,7 +48,7 @@ class NotificationMailerTest < ActionMailer::TestCase
     mail = NotificationMailer.component_status_change(@subscriber, @component, old_status)
 
     assert_equal "[#{@status_page.name}] #{@component.name} Status Changed", mail.subject
-    assert_equal [@subscriber.email], mail.to
+    assert_equal [ @subscriber.email ], mail.to
 
     assert_match @component.name, mail.body.encoded
     assert_match "Status Changed", mail.body.encoded

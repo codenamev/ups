@@ -4,8 +4,8 @@ class Api::BaseController < ActionController::API
   before_action :set_current_account
   before_action :rate_limit_api_requests!
 
-  before_action :check_idempotency_key, only: [:create, :update]
-  after_action :store_idempotency_key, only: [:create, :update]
+  before_action :check_idempotency_key, only: [ :create, :update ]
+  after_action :store_idempotency_key, only: [ :create, :update ]
 
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
   rescue_from ActiveRecord::RecordInvalid, with: :render_validation_errors

@@ -37,11 +37,11 @@ class MonitoringOrchestrator
 
   def execute_check
     case @monitor.check_type
-    when 'http', 'https'
+    when "http", "https"
       HttpCheckService.new(@monitor).call
-    when 'tcp'
+    when "tcp"
       TcpCheckService.new(@monitor).call
-    when 'ping'
+    when "ping"
       PingCheckService.new(@monitor).call
     else
       raise "Unknown check type: #{@monitor.check_type}"
@@ -59,7 +59,7 @@ class MonitoringOrchestrator
     current_hour = Time.current.beginning_of_hour
 
     summary = @monitor.monitor_summaries.find_or_initialize_by(
-      period_type: 'hour',
+      period_type: "hour",
       period_start: current_hour
     )
 
@@ -75,8 +75,8 @@ class MonitoringOrchestrator
     end
 
     # Update percentiles (simplified - for full implementation would need to store all values)
-    summary.p95_response_ms = [summary.p95_response_ms || 0, duration_ms].max
-    summary.p99_response_ms = [summary.p99_response_ms || 0, duration_ms].max
+    summary.p95_response_ms = [ summary.p95_response_ms || 0, duration_ms ].max
+    summary.p99_response_ms = [ summary.p99_response_ms || 0, duration_ms ].max
 
     # Calculate uptime percentage
     summary.uptime_percentage = (summary.successful_count.to_f / summary.checks_count * 100).round(2)
@@ -91,7 +91,7 @@ class MonitoringOrchestrator
     current_day = Time.current.beginning_of_day
 
     summary = @monitor.monitor_summaries.find_or_initialize_by(
-      period_type: 'day',
+      period_type: "day",
       period_start: current_day
     )
 
@@ -105,8 +105,8 @@ class MonitoringOrchestrator
       summary.avg_response_ms = duration_ms
     end
 
-    summary.p95_response_ms = [summary.p95_response_ms || 0, duration_ms].max
-    summary.p99_response_ms = [summary.p99_response_ms || 0, duration_ms].max
+    summary.p95_response_ms = [ summary.p95_response_ms || 0, duration_ms ].max
+    summary.p99_response_ms = [ summary.p99_response_ms || 0, duration_ms ].max
     summary.uptime_percentage = (summary.successful_count.to_f / summary.checks_count * 100).round(2)
 
     summary.save!
@@ -114,14 +114,14 @@ class MonitoringOrchestrator
 
   def status_changed?(current_success)
     previous_status = @monitor.status_was
-    new_status = current_success ? 'up' : 'down'
+    new_status = current_success ? "up" : "down"
 
     previous_status != new_status
   end
 
   def trigger_status_change_workflow(success)
-    new_status = success ? 'up' : 'down'
-    old_status = success ? 'down' : 'up'
+    new_status = success ? "up" : "down"
+    old_status = success ? "down" : "up"
 
     # Update component status if needed
     component = @monitor.component
@@ -173,7 +173,7 @@ class HttpCheckService
 
   def call
     uri = URI.parse(@monitor.url)
-    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https', read_timeout: @monitor.timeout_seconds) do |http|
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", read_timeout: @monitor.timeout_seconds) do |http|
       request = Net::HTTP::Get.new(uri)
       http.request(request)
     end

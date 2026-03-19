@@ -1,7 +1,7 @@
 class IncidentUpdatesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_incident
-  before_action :set_incident_update, only: [:show, :edit, :update, :destroy]
+  before_action :set_incident_update, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @incident_updates = @incident.incident_updates.includes(:user).order(created_at: :desc)
@@ -35,7 +35,7 @@ class IncidentUpdatesController < ApplicationController
       if @incident_update.status.present? && @incident_update.status != @incident.status
         old_status = @incident.status
         @incident.update!(status: @incident_update.status)
-        
+
         @incident.incident_events.create!(
           event_type: "status_changed",
           user: Current.user,
@@ -48,7 +48,7 @@ class IncidentUpdatesController < ApplicationController
       end
 
       respond_to do |format|
-        format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: 'Update was successfully posted.' }
+        format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: "Update was successfully posted." }
         format.turbo_stream
       end
     else
@@ -75,7 +75,7 @@ class IncidentUpdatesController < ApplicationController
       )
 
       respond_to do |format|
-        format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: 'Update was successfully edited.' }
+        format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: "Update was successfully edited." }
         format.turbo_stream
       end
     else
@@ -88,9 +88,9 @@ class IncidentUpdatesController < ApplicationController
 
   def destroy
     @incident_update.destroy!
-    
+
     respond_to do |format|
-      format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: 'Update was successfully deleted.' }
+      format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: "Update was successfully deleted." }
       format.turbo_stream
     end
   end

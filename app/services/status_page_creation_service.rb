@@ -39,9 +39,9 @@ class StatusPageCreationService
 
   def setup_default_components(status_page)
     default_components = [
-      { name: 'API', description: 'Core API services' },
-      { name: 'Website', description: 'Main website and dashboard' },
-      { name: 'Dashboard', description: 'User dashboard and interface' }
+      { name: "API", description: "Core API services" },
+      { name: "Website", description: "Main website and dashboard" },
+      { name: "Dashboard", description: "User dashboard and interface" }
     ]
 
     default_components.each_with_index do |component_data, index|
@@ -61,8 +61,8 @@ class StatusPageCreationService
     # but let's ensure it exists with proper defaults
     unless status_page.page_setting
       status_page.create_page_setting!(
-        timezone: 'UTC',
-        theme: 'light',
+        timezone: "UTC",
+        theme: "light",
         maintenance_mode: false
       )
     end
@@ -70,9 +70,9 @@ class StatusPageCreationService
 
   def setup_default_branding(status_page)
     if status_page.branding
-      status_page.branding.update!(primary_color: '#2563eb') unless status_page.branding.primary_color.present?
+      status_page.branding.update!(primary_color: "#2563eb") unless status_page.branding.primary_color.present?
     else
-      status_page.create_branding!(primary_color: '#2563eb')
+      status_page.create_branding!(primary_color: "#2563eb")
     end
   end
 
@@ -87,7 +87,7 @@ class StatusPageCreationService
   def failure_result(error: nil)
     OpenStruct.new(
       success?: false,
-      error: error || errors.full_messages.join(', '),
+      error: error || errors.full_messages.join(", "),
       status_page: nil
     )
   end

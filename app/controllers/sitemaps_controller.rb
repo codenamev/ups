@@ -4,49 +4,49 @@ class SitemapsController < ActionController::Base
       {
         loc: root_url,
         lastmod: 1.day.ago,
-        changefreq: 'weekly',
+        changefreq: "weekly",
         priority: 1.0
       },
       {
         loc: "#{root_url}pricing",
         lastmod: 1.week.ago,
-        changefreq: 'monthly',
+        changefreq: "monthly",
         priority: 0.8
       },
       {
         loc: "#{root_url}compare/statuspage",
         lastmod: 1.week.ago,
-        changefreq: 'monthly',
+        changefreq: "monthly",
         priority: 0.8
       },
       {
         loc: "#{root_url}compare/cachet",
         lastmod: 1.week.ago,
-        changefreq: 'monthly',
+        changefreq: "monthly",
         priority: 0.7
       },
       {
         loc: "#{root_url}compare/betteruptime",
         lastmod: 1.week.ago,
-        changefreq: 'monthly',
+        changefreq: "monthly",
         priority: 0.7
       },
       {
         loc: "#{root_url}use-cases/saas",
         lastmod: 1.week.ago,
-        changefreq: 'monthly',
+        changefreq: "monthly",
         priority: 0.7
       },
       {
         loc: "#{root_url}use-cases/api-providers",
         lastmod: 1.week.ago,
-        changefreq: 'monthly',
+        changefreq: "monthly",
         priority: 0.7
       },
       {
         loc: "#{root_url}use-cases/indie-hackers",
         lastmod: 1.week.ago,
-        changefreq: 'monthly',
+        changefreq: "monthly",
         priority: 0.7
       }
     ]
@@ -58,14 +58,14 @@ class SitemapsController < ActionController::Base
         @urls << {
           loc: public_status_page_url(page.slug),
           lastmod: page.updated_at,
-          changefreq: 'hourly',
+          changefreq: "hourly",
           priority: 0.6
         }
       end
     end
 
     respond_to do |format|
-      format.xml { render template: 'sitemaps/index', layout: false }
+      format.xml { render template: "sitemaps/index", layout: false }
     end
   end
 end

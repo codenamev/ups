@@ -20,7 +20,7 @@ class Subscriber < ApplicationRecord
   end
 
   def preferences_for(component = nil)
-    notification_preferences.find_by(component: component) || 
+    notification_preferences.find_by(component: component) ||
       build_default_preference(component)
   end
 

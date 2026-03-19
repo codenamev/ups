@@ -20,13 +20,13 @@ class IncidentNotificationJob < ApplicationJob
   class NotificationService
     def deliver_all(incident, event_type)
       case event_type.to_s
-      when 'created'
+      when "created"
         ::NotificationService.notify_incident_created(incident)
-      when 'updated'
+      when "updated"
         # Find the latest incident update
         latest_update = incident.incident_updates.order(:created_at).last
         ::NotificationService.notify_incident_updated(incident, latest_update) if latest_update
-      when 'resolved'
+      when "resolved"
         ::NotificationService.notify_incident_resolved(incident)
       else
         Rails.logger.warn "Unknown incident notification event type: #{event_type}"

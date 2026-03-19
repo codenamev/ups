@@ -1,7 +1,7 @@
 # API controller for managing incidents
 class Api::V1::IncidentsController < Api::BaseController
   before_action :set_status_page
-  before_action :set_incident, only: [:show, :update, :destroy]
+  before_action :set_incident, only: [ :show, :update, :destroy ]
 
   def index
     incidents = @status_page.incidents.includes(:components, :incident_updates, :user)
@@ -145,7 +145,7 @@ class Api::V1::IncidentsController < Api::BaseController
   end
 
   def create_incident_update(old_status)
-    update_message = params[:incident][:update_message] || 
+    update_message = params[:incident][:update_message] ||
                     default_status_message(@incident.status, old_status)
 
     @incident.incident_updates.create!(

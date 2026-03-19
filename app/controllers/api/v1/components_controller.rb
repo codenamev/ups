@@ -1,7 +1,7 @@
 # API controller for managing components
 class Api::V1::ComponentsController < Api::BaseController
   before_action :set_status_page
-  before_action :set_component, only: [:show, :update, :destroy]
+  before_action :set_component, only: [ :show, :update, :destroy ]
 
   def index
     components = @status_page.components.visible.by_position
@@ -66,12 +66,12 @@ class Api::V1::ComponentsController < Api::BaseController
 
   def component_params
     permitted_params = params.require(:component).permit(:name, :description, :status, :position, :visible)
-    
+
     # Normalize API status values to internal values
     if permitted_params[:status].present?
       permitted_params[:status] = normalize_status_from_api(permitted_params[:status])
     end
-    
+
     permitted_params
   end
 

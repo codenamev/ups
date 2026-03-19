@@ -6,10 +6,10 @@ module MagicLinkAuthentication
 
   def send_magic_link(user)
     return false unless user.present?
-    
+
     token = user.generate_token_for(:magic_link)
     SessionMailer.with(user: user, token: token).magic_link.deliver_later
-    
+
     Rails.logger.info "Magic link sent to user: #{user.email}"
     true
   rescue StandardError => e

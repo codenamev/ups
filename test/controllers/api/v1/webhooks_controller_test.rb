@@ -29,7 +29,7 @@ class Api::V1::WebhooksControllerTest < ActionDispatch::IntegrationTest
   test "should create webhook" do
     assert_difference("Webhook.count") do
       post api_v1_status_page_webhooks_url(@status_page), headers: @auth_header, params: {
-        webhook: { name: "New Webhook", url: "https://example.com/new-hook", events: ["incident.created"] }
+        webhook: { name: "New Webhook", url: "https://example.com/new-hook", events: [ "incident.created" ] }
       }
     end
 

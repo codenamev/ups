@@ -4,7 +4,7 @@ class ComponentsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_status_page
   before_action :set_component, only: [ :show, :edit, :update, :destroy, :reorder ]
-  before_action -> { check_plan_limits(:components) }, only: [:create]
+  before_action -> { check_plan_limits(:components) }, only: [ :create ]
 
   def index
     @components = @status_page.components.by_position

@@ -26,7 +26,7 @@ class IncidentWorkflow
       @incident.save!
 
       # Record creation event
-      record_event('incident_created', {
+      record_event("incident_created", {
         title: title,
         impact: impact,
         component_ids: component_ids,
@@ -36,7 +36,7 @@ class IncidentWorkflow
       # Attach components
       component_ids.each do |component_id|
         @incident.incident_components.create!(component_id: component_id)
-        record_event('component_added', { component_id: component_id })
+        record_event("component_added", { component_id: component_id })
       end
 
       # Update component statuses based on impact
@@ -50,13 +50,13 @@ class IncidentWorkflow
         user: @current_user
       )
 
-      record_event('update_posted', {
+      record_event("update_posted", {
         message: initial_message,
-        status: 'investigating'
+        status: "investigating"
       })
 
       # Trigger notifications
-      IncidentNotificationJob.perform_later(@incident.id, 'created')
+      IncidentNotificationJob.perform_later(@incident.id, "created")
 
       @incident
     end
@@ -76,7 +76,7 @@ class IncidentWorkflow
       attrs[:resolved_at] = Time.current if new_status.to_sym == :resolved
       @incident.update!(attrs)
 
-      record_event('status_changed', {
+      record_event("status_changed", {
         old_status: old_status,
         new_status: new_status
       })
@@ -89,7 +89,7 @@ class IncidentWorkflow
           user: @current_user
         )
 
-        record_event('update_posted', {
+        record_event("update_posted", {
           message: message,
           status: new_status
         })
@@ -97,14 +97,14 @@ class IncidentWorkflow
 
       # Record resolved event
       if new_status.to_sym == :resolved
-        record_event('incident_resolved', {
+        record_event("incident_resolved", {
           resolved_at: @incident.resolved_at,
           duration_minutes: duration_in_minutes
         })
       end
 
       # Trigger notifications
-      IncidentNotificationJob.perform_later(@incident.id, 'updated')
+      IncidentNotificationJob.perform_later(@incident.id, "updated")
 
       true
     end
@@ -117,7 +117,7 @@ class IncidentWorkflow
     return false if @incident.component_ids.include?(component_id)
 
     @incident.incident_components.create!(component_id: component_id)
-    record_event('component_added', { component_id: component_id })
+    record_event("component_added", { component_id: component_id })
 
     # Update component status if incident is ongoing
     unless @incident.status_resolved?
@@ -136,7 +136,7 @@ class IncidentWorkflow
     return false unless incident_component
 
     incident_component.destroy!
-    record_event('component_removed', { component_id: component_id })
+    record_event("component_removed", { component_id: component_id })
 
     # Reset component status if no other active incidents affect it
     component = Component.find(component_id)

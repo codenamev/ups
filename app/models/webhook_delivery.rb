@@ -2,21 +2,21 @@ class WebhookDelivery < ApplicationRecord
   belongs_to :webhook
 
   MAX_RETRIES = 5
-  RETRY_DELAYS = [1.minute, 5.minutes, 30.minutes, 2.hours, 12.hours].freeze
+  RETRY_DELAYS = [ 1.minute, 5.minutes, 30.minutes, 2.hours, 12.hours ].freeze
 
   enum :status, {
-    pending: 'pending',
-    delivered: 'delivered', 
-    failed: 'failed',
-    retrying: 'retrying'
+    pending: "pending",
+    delivered: "delivered",
+    failed: "failed",
+    retrying: "retrying"
   }
 
   validates :event_type, presence: true
   validates :event_data, presence: true
   validates :idempotency_key, presence: true, uniqueness: true
 
-  scope :failed_retries, -> { where(status: ['failed', 'retrying']).where('retries < ?', MAX_RETRIES) }
-  scope :ready_for_retry, -> { failed_retries.where('last_retry_at IS NULL OR last_retry_at < ?', 5.minutes.ago) }
+  scope :failed_retries, -> { where(status: [ "failed", "retrying" ]).where("retries < ?", MAX_RETRIES) }
+  scope :ready_for_retry, -> { failed_retries.where("last_retry_at IS NULL OR last_retry_at < ?", 5.minutes.ago) }
 
   before_validation :generate_idempotency_key, on: :create
 
@@ -27,7 +27,7 @@ class WebhookDelivery < ApplicationRecord
   def next_retry_at
     return nil unless can_retry?
     return Time.current if last_retry_at.nil?
-    
+
     delay = RETRY_DELAYS[retries] || RETRY_DELAYS.last
     last_retry_at + delay
   end
@@ -38,7 +38,7 @@ class WebhookDelivery < ApplicationRecord
 
   def mark_delivered!(response_status, response_body = nil)
     update!(
-      status: 'delivered',
+      status: "delivered",
       delivered_at: Time.current,
       response_status: response_status,
       response_body: response_body&.truncate(10_000)
@@ -48,7 +48,7 @@ class WebhookDelivery < ApplicationRecord
   def mark_failed!(response_status = nil, response_body = nil)
     increment!(:retries)
     update!(
-      status: can_retry? ? 'retrying' : 'failed',
+      status: can_retry? ? "retrying" : "failed",
       last_retry_at: Time.current,
       response_status: response_status,
       response_body: response_body&.truncate(10_000)

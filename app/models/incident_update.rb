@@ -7,13 +7,13 @@ class IncidentUpdate < ApplicationRecord
 
   enum :status, {
     investigating: 0,
-    identified: 1, 
+    identified: 1,
     monitoring: 2,
     resolved: 3
   }, prefix: :status, allow_nil: true
 
   scope :recent, -> { order(created_at: :desc) }
-  
+
   after_create :broadcast_new_update, :notify_incident_update
   after_update :broadcast_update_change
 
@@ -32,7 +32,7 @@ class IncidentUpdate < ApplicationRecord
     return unless incident.status_page&.slug
 
     broadcast_replace_to "incident_#{incident.id}",
-                         target: "incident-updates", 
+                         target: "incident-updates",
                          partial: "incidents/updates",
                          locals: { incident: incident, incident_updates: incident.incident_updates.recent }
   end

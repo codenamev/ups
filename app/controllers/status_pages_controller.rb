@@ -3,7 +3,7 @@ class StatusPagesController < ApplicationController
 
   before_action :authenticate_user!
   before_action :set_status_page, only: [ :show, :edit, :update, :destroy ]
-  before_action -> { check_plan_limits(:status_pages) }, only: [:create]
+  before_action -> { check_plan_limits(:status_pages) }, only: [ :create ]
 
   def index
     @status_pages = Current.account.status_pages.includes(:components, :incidents)

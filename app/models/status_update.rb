@@ -15,12 +15,12 @@ class StatusUpdate < ApplicationRecord
   validates :scheduled_for, presence: true
   validates :estimated_duration, presence: true, numericality: { greater_than: 0 }
   validates :status, presence: true
-  
+
   validate :scheduled_for_in_future, on: :create
   validate :estimated_duration_reasonable
 
   scope :upcoming, -> { where(scheduled_for: Time.current..) }
-  scope :active, -> { where(status: [:scheduled, :in_progress]) }
+  scope :active, -> { where(status: [ :scheduled, :in_progress ]) }
   scope :this_week, -> { where(scheduled_for: Time.current.beginning_of_week..Time.current.end_of_week) }
 
   after_create :broadcast_new_maintenance
@@ -49,7 +49,7 @@ class StatusUpdate < ApplicationRecord
 
   def scheduled_for_in_future
     return unless scheduled_for.present?
-    
+
     if scheduled_for <= Time.current
       errors.add(:scheduled_for, "must be in the future")
     end
@@ -57,7 +57,7 @@ class StatusUpdate < ApplicationRecord
 
   def estimated_duration_reasonable
     return unless estimated_duration.present?
-    
+
     # Between 15 minutes and 48 hours
     if estimated_duration < 15 || estimated_duration > 2880
       errors.add(:estimated_duration, "must be between 15 minutes and 48 hours")

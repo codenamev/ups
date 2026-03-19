@@ -61,7 +61,7 @@ class MonitorCheckJobTest < ActiveJob::TestCase
   end
 
   test "enqueues job for later execution" do
-    assert_enqueued_with(job: MonitorCheckJob, args: [@monitor.id]) do
+    assert_enqueued_with(job: MonitorCheckJob, args: [ @monitor.id ]) do
       MonitorCheckJob.perform_later(@monitor.id)
     end
   end

@@ -1,6 +1,6 @@
 # API controller for managing status pages
 class Api::V1::StatusPagesController < Api::BaseController
-  before_action :set_status_page, only: [:show, :update, :destroy]
+  before_action :set_status_page, only: [ :show, :update, :destroy ]
 
   def index
     status_pages = current_account.status_pages

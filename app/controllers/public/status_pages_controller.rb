@@ -87,7 +87,7 @@ class Public::StatusPagesController < ActionController::Base
           shortlink: incident.shortlink
         }
       end,
-      last_updated_at: [@status_page.updated_at, *@components.map(&:updated_at)].compact.max.iso8601
+      last_updated_at: [ @status_page.updated_at, *@components.map(&:updated_at) ].compact.max.iso8601
     }
   end
 

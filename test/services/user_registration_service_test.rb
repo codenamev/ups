@@ -4,9 +4,9 @@ class UserRegistrationServiceTest < ActiveSupport::TestCase
   test "registers new user with unique account" do
     email = "newuser@example.com"
 
-    assert_difference 'User.count', 1 do
-      assert_difference 'Account.count', 1 do
-        assert_difference 'AccountUser.count', 1 do
+    assert_difference "User.count", 1 do
+      assert_difference "Account.count", 1 do
+        assert_difference "AccountUser.count", 1 do
           user = UserRegistrationService.register_or_find_user(email)
 
           assert_equal email, user.email
@@ -28,7 +28,7 @@ class UserRegistrationServiceTest < ActiveSupport::TestCase
   test "returns existing user without creating duplicates" do
     existing_user = users(:one)
 
-    assert_no_difference ['User.count', 'Account.count', 'AccountUser.count'] do
+    assert_no_difference [ "User.count", "Account.count", "AccountUser.count" ] do
       user = UserRegistrationService.register_or_find_user(existing_user.email)
       assert_equal existing_user, user
     end

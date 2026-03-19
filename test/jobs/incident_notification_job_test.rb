@@ -63,7 +63,7 @@ class IncidentNotificationJobTest < ActiveJob::TestCase
   end
 
   test "enqueues job for later execution" do
-    assert_enqueued_with(job: IncidentNotificationJob, args: [@incident.id, "created"]) do
+    assert_enqueued_with(job: IncidentNotificationJob, args: [ @incident.id, "created" ]) do
       IncidentNotificationJob.perform_later(@incident.id, "created")
     end
   end

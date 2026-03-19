@@ -1,7 +1,7 @@
 # Registrations controller for new user signup
 class RegistrationsController < ApplicationController
   include MagicLinkAuthentication
-  
+
   skip_before_action :authenticate_user!, only: [ :new, :create ]
 
   def new
