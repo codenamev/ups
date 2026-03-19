@@ -227,26 +227,23 @@
         </div>
         <div class="p-6 space-y-3">
           <% unless @incident.status_resolved? %>
-            <%= link_to "Mark as Resolved", 
-                status_page_incident_path(@incident.status_page, @incident, incident: { status: "resolved" }), 
-                method: :patch,
+            <%= link_to "Mark as Resolved",
+                status_page_incident_path(@incident.status_page, @incident, incident: { status: "resolved" }),
                 class: "w-full btn-success text-center",
-                data: { confirm: "Are you sure you want to mark this incident as resolved?" } %>
+                data: { turbo_method: :patch, turbo_confirm: "Are you sure you want to mark this incident as resolved?" } %>
           <% else %>
-            <%= link_to "Reopen Incident", 
-                status_page_incident_path(@incident.status_page, @incident, incident: { status: "investigating" }), 
-                method: :patch,
+            <%= link_to "Reopen Incident",
+                status_page_incident_path(@incident.status_page, @incident, incident: { status: "investigating" }),
                 class: "w-full btn-warning text-center",
-                data: { confirm: "Are you sure you want to reopen this incident?" } %>
+                data: { turbo_method: :patch, turbo_confirm: "Are you sure you want to reopen this incident?" } %>
           <% end %>
-          
+
           <%= link_to "Edit Incident", edit_status_page_incident_path(@incident.status_page, @incident),
               class: "w-full btn-secondary text-center" %>
-          
+
           <%= link_to "Delete Incident", status_page_incident_path(@incident.status_page, @incident),
-              method: :delete,
               class: "w-full btn-danger text-center",
-              data: { confirm: "Are you sure? This action cannot be undone." } %>
+              data: { turbo_method: :delete, turbo_confirm: "Are you sure? This action cannot be undone." } %>
         </div>
       </div>
 

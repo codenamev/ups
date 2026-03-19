@@ -139,11 +139,10 @@
           class: "btn-secondary" %>
       
       <div class="flex items-center gap-3">
-        <%= link_to "Delete Update", 
+        <%= link_to "Delete Update",
             status_page_incident_incident_update_path(@incident.status_page, @incident, @incident_update),
-            method: :delete,
             class: "btn-danger",
-            data: { confirm: "Are you sure you want to delete this update? This action cannot be undone." } %>
+            data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this update? This action cannot be undone." } %>
         
         <%= form.submit "Save Changes", 
             class: "btn-primary" %>

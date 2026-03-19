@@ -1,0 +1,31 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+scheduled_maintenance:
+  title: "Database Migration"
+  message: "We will be migrating our database to improve performance. Some API endpoints may be temporarily unavailable."
+  scheduled_for: <%= 2.days.from_now %>
+  estimated_duration: 120  # 2 hours
+  status: 0  # scheduled
+  component: one
+  user: one
+  account: one
+
+completed_maintenance:
+  title: "Server Upgrade"
+  message: "Upgrading our servers to the latest hardware for better reliability."
+  scheduled_for: <%= 1.day.ago %>
+  estimated_duration: 60  # 1 hour
+  status: 2  # completed
+  component: two
+  user: one
+  account: one
+
+in_progress_maintenance:
+  title: "Security Updates"
+  message: "Installing critical security patches across all systems."
+  scheduled_for: <%= 30.minutes.ago %>
+  estimated_duration: 90  # 1.5 hours
+  status: 1  # in_progress
+  component: one
+  user: two
+  account: two

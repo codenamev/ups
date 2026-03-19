@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  account: one
+  name: "API Services Status"
+  slug: "api-services-status"
+  description: "Real-time status of our API services and infrastructure."
+
+two:
+  account: two
+  name: "Web Application Status"
+  slug: "web-app-status"
+  description: "Status page for our web application and related services."

@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  account: one
+  status_page: one
+  url: https://example.com/webhook
+  events: "incident.created,incident.updated"
+  active: true
+  secret_token: test_secret_token_one
+  name: Test Webhook
+
+two:
+  account: two
+  status_page: two
+  url: https://example.com/webhook2
+  events: "incident.created,incident.resolved"
+  active: true
+  secret_token: test_secret_token_two
+  name: Test Webhook Two

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_03_062855) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_13_000000) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id", null: false
     t.datetime "created_at", null: false
@@ -172,6 +172,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_03_062855) do
     t.boolean "visible", default: true
     t.index ["account_id"], name: "index_components_on_account_id"
     t.index ["status"], name: "index_components_on_status"
+    t.index ["status_page_id", "name"], name: "index_components_on_status_page_id_and_name", unique: true
     t.index ["status_page_id", "position"], name: "index_components_on_status_page_id_and_position", unique: true
     t.index ["status_page_id"], name: "index_components_on_status_page_id"
   end

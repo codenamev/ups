@@ -59,7 +59,7 @@ class Api::V1::IncidentUpdatesController < Api::BaseController
   private
 
   def set_status_page
-    @status_page = current_account.status_pages.find(params[:status_page_id])
+    @status_page = find_status_page(params[:status_page_id])
   end
 
   def set_incident

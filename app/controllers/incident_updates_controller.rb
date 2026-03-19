@@ -48,7 +48,7 @@ class IncidentUpdatesController < ApplicationController
       end
 
       respond_to do |format|
-        format.html { redirect_to @incident, notice: 'Update was successfully posted.' }
+        format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: 'Update was successfully posted.' }
         format.turbo_stream
       end
     else
@@ -75,7 +75,7 @@ class IncidentUpdatesController < ApplicationController
       )
 
       respond_to do |format|
-        format.html { redirect_to @incident, notice: 'Update was successfully edited.' }
+        format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: 'Update was successfully edited.' }
         format.turbo_stream
       end
     else
@@ -90,7 +90,7 @@ class IncidentUpdatesController < ApplicationController
     @incident_update.destroy!
     
     respond_to do |format|
-      format.html { redirect_to @incident, notice: 'Update was successfully deleted.' }
+      format.html { redirect_to status_page_incident_url(@incident.status_page, @incident), notice: 'Update was successfully deleted.' }
       format.turbo_stream
     end
   end

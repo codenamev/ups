@@ -1,25 +1,24 @@
 class UnsubscribeController < ApplicationController
   skip_before_action :authenticate_user!
-  before_action :find_subscriber
+  layout false
 
   def show
-    # Show confirmation page
     @subscriber = find_subscriber
     if @subscriber.nil?
-      redirect_to root_path, alert: "Invalid unsubscribe link."
-      return
+      render :invalid_token
     end
   end
 
   def confirm
     @subscriber = find_subscriber
     if @subscriber.nil?
-      redirect_to root_path, alert: "Invalid unsubscribe link."
+      render :invalid_token
       return
     end
 
+    @status_page = @subscriber.status_page
     if @subscriber.update(unsubscribed_at: Time.current)
-      redirect_to root_path, notice: "You have been successfully unsubscribed from #{@subscriber.status_page.name} notifications."
+      render :confirmed
     else
       redirect_to unsubscribe_path(params[:token]), alert: "There was an error processing your unsubscribe request."
     end
@@ -28,6 +27,6 @@ class UnsubscribeController < ApplicationController
   private
 
   def find_subscriber
-    @subscriber ||= Subscriber.find_by(unsubscribe_token: params[:token])
+    Subscriber.find_by(unsubscribe_token: params[:token])
   end
 end

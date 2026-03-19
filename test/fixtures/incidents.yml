@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  account: one
+  status_page: one
+  user: one
+  title: API Outage Incident
+  status: 1
+  impact: 1
+  started_at: 2026-02-13 00:40:24
+  resolved_at: 2026-02-13 00:40:24
+
+two:
+  account: two
+  status_page: two
+  user: two
+  title: Other Corp Incident
+  status: 1
+  impact: 1
+  started_at: 2026-02-13 00:40:24
+  resolved_at: 2026-02-13 00:40:24

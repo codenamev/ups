@@ -1,0 +1,37 @@
+<%# Components Index %>
+<div class="flex justify-between items-center mb-6">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Components</h1>
+    <p class="text-gray-600">Manage components for <%= @status_page.name %>.</p>
+  </div>
+  <%= link_to "Add Component", new_status_page_component_path(@status_page), class: "inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+</div>
+
+<% if @components.any? %>
+  <div class="bg-white rounded-lg shadow border">
+    <div class="divide-y divide-gray-200">
+      <% @components.each do |component| %>
+        <div class="px-6 py-4 flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="w-3 h-3 rounded-full <%= component_status_color(component.status) %>"></div>
+            <div>
+              <h3 class="font-medium text-gray-900"><%= component.name %></h3>
+              <% if component.description.present? %>
+                <p class="text-sm text-gray-600"><%= component.description %></p>
+              <% end %>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="capitalize text-sm text-gray-700"><%= component.status.humanize %></span>
+            <%= link_to "Edit", edit_status_page_component_path(@status_page, component), class: "text-blue-600 hover:text-blue-800 text-sm" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <div class="text-center py-12">
+    <h3 class="text-lg font-medium text-gray-900">No components yet</h3>
+    <p class="text-gray-600 mt-2">Add components to track the status of your services.</p>
+  </div>
+<% end %>

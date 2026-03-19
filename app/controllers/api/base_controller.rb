@@ -93,8 +93,8 @@ class Api::BaseController < ActionController::API
     }, status: :bad_request
   end
 
-  def render_success(data, status: :ok)
-    render json: data, status: status
+  def render_success(data = nil, status: :ok, **kwargs)
+    render json: data || kwargs, status: status
   end
 
   def render_created(data)
@@ -130,6 +130,14 @@ class Api::BaseController < ActionController::API
     )
   rescue ActiveRecord::RecordNotUnique
     # Already stored (race condition) — ignore
+  end
+
+  def find_status_page(identifier)
+    if identifier.to_s.match?(/\A\d+\z/)
+      current_account.status_pages.find(identifier)
+    else
+      current_account.status_pages.find_by!(slug: identifier)
+    end
   end
 
   def rate_limit_api_requests!

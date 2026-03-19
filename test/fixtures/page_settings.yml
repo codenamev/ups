@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  status_page: one
+  timezone: MyString
+  theme: MyString
+  custom_css: MyText
+  maintenance_mode: false
+
+two:
+  status_page: two
+  timezone: MyString
+  theme: MyString
+  custom_css: MyText
+  maintenance_mode: false

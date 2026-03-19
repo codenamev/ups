@@ -48,7 +48,7 @@ class Api::V1::StatusPagesController < Api::BaseController
   private
 
   def set_status_page
-    @status_page = current_account.status_pages.find(params[:id])
+    @status_page = find_status_page(params[:id])
   end
 
   def status_page_params

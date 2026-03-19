@@ -19,7 +19,7 @@ class Webhook < ApplicationRecord
   validate :events_must_be_valid
   
   before_validation :generate_secret_token, on: :create
-  before_validation :serialize_events
+  before_validation :normalize_events
 
   scope :active, -> { where(active: true) }
 
@@ -42,10 +42,15 @@ class Webhook < ApplicationRecord
     self.secret_token = SecureRandom.hex(32) if secret_token.blank?
   end
 
-  def serialize_events
+  def normalize_events
     if events.is_a?(Array)
       self.events = events.join(',')
+    elsif events.present? && events.start_with?('[')
+      parsed = JSON.parse(events)
+      self.events = parsed.join(',') if parsed.is_a?(Array)
     end
+  rescue JSON::ParserError
+    errors.add(:events, "contains invalid JSON")
   end
 
   def events_must_be_valid

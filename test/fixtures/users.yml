@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email: user1@example.com
+  name: User One
+  avatar_url: MyString
+  last_sign_in_at: 2026-02-13 00:40:02
+
+two:
+  email: user2@example.com
+  name: User Two
+  avatar_url: MyString
+  last_sign_in_at: 2026-02-13 00:40:02

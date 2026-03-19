@@ -12,7 +12,7 @@ class StatusPage < ApplicationRecord
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: { scope: :account_id }
 
-  before_validation :set_slug, on: :create
+  before_validation :normalize_slug
   after_create :create_default_settings
 
   delegate :timezone, :theme, :custom_css, :maintenance_mode, to: :page_setting, allow_nil: true
@@ -20,8 +20,12 @@ class StatusPage < ApplicationRecord
 
   private
 
-  def set_slug
-    self.slug = name.parameterize if name.present? && slug.blank?
+  def normalize_slug
+    if slug.present?
+      self.slug = slug.downcase
+    elsif name.present?
+      self.slug = name.parameterize
+    end
   end
 
   def create_default_settings

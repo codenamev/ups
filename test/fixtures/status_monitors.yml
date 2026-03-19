@@ -1,0 +1,27 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  account: one
+  status_page: one
+  component: one
+  name: MyString
+  url: MyString
+  check_type: 1
+  interval_seconds: 60
+  timeout_seconds: 30
+  expected_status_code: 200
+  status: 0
+  last_checked_at: 2026-02-13 00:40:42
+
+two:
+  account: two
+  status_page: two
+  component: two
+  name: MyString
+  url: MyString
+  check_type: 1
+  interval_seconds: 60
+  timeout_seconds: 30
+  expected_status_code: 200
+  status: 0
+  last_checked_at: 2026-02-13 00:40:42

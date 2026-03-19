@@ -24,7 +24,7 @@ Previously Affected Components:
 
 <% end %>
 Duration: <% if @incident.started_at.present? && @incident.resolved_at.present? %>
-<%= time_ago_in_words(@incident.resolved_at, @incident.started_at) %>
+<%= distance_of_time_in_words(@incident.started_at, @incident.resolved_at) %>
 <% else %>
 Unknown
 <% end %>

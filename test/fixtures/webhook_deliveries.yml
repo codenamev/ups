@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  webhook: one
+  event_type: MyString
+  event_data: MyText
+  idempotency_key: webhook-delivery-key-one
+  status: MyString
+  response_status: 1
+  response_body: MyText
+  delivered_at: 2026-02-28 23:01:30
+  retries: 1
+  last_retry_at: 2026-02-28 23:01:30
+
+two:
+  webhook: two
+  event_type: MyString
+  event_data: MyText
+  idempotency_key: webhook-delivery-key-two
+  status: MyString
+  response_status: 1
+  response_body: MyText
+  delivered_at: 2026-02-28 23:01:30
+  retries: 1
+  last_retry_at: 2026-02-28 23:01:30

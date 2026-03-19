@@ -12,8 +12,5 @@ class RetryFailedWebhooksJob < ApplicationJob
     end
     
     Rails.logger.info "Queued #{retried_count} webhook deliveries for retry"
-    
-    # Schedule next retry job in 5 minutes
-    RetryFailedWebhooksJob.set(wait: 5.minutes).perform_later
   end
 end

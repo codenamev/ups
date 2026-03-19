@@ -23,14 +23,14 @@
             </div>
             <div class="ml-3">
               <h3 class="text-sm font-medium text-green-800">
-                <%= flash[:api_token][:message] %>
+                <%= flash[:api_token]["message"] %>
               </h3>
               <div class="mt-2 text-sm text-green-700">
-                <strong>Token Name:</strong> <%= flash[:api_token][:name] %>
+                <strong>Token Name:</strong> <%= flash[:api_token]["name"] %>
               </div>
               <div class="mt-2 p-3 bg-gray-900 rounded-md">
                 <code class="text-sm text-green-400 font-mono break-all">
-                  <%= flash[:api_token][:token] %>
+                  <%= flash[:api_token]["token"] %>
                 </code>
               </div>
               <p class="mt-2 text-xs text-green-600">
@@ -76,10 +76,10 @@
                     </div>
                   </div>
                   <div class="flex items-center space-x-2">
-                    <%= link_to "Delete", api_token_path(token), 
-                          method: :delete,
-                          data: { 
-                            confirm: "Are you sure you want to delete the '#{token.name}' token? This action cannot be undone." 
+                    <%= link_to "Delete", api_token_path(token),
+                          data: {
+                            turbo_method: :delete,
+                            turbo_confirm: "Are you sure you want to delete the '#{token.name}' token? This action cannot be undone."
                           },
                           class: "text-red-600 hover:text-red-900 text-sm font-medium" %>
                   </div>

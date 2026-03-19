@@ -7,7 +7,7 @@ class ApiToken < ApplicationRecord
   validates :token_prefix, presence: true, uniqueness: true
   validates :token_digest, presence: true
 
-  before_create :generate_token_digest
+  before_validation :generate_token_digest, on: :create
 
   def self.authenticate(token)
     return nil unless token.present?
@@ -37,6 +37,10 @@ class ApiToken < ApplicationRecord
     "#{token_prefix}_****"
   end
 
+  def full_token
+    @full_token
+  end
+
   private
 
   def generate_token_digest
@@ -50,7 +54,4 @@ class ApiToken < ApplicationRecord
     @full_token = "#{token_prefix}_#{suffix}"
   end
 
-  def full_token
-    @full_token
-  end
 end

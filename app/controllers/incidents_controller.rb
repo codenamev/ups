@@ -8,7 +8,6 @@ class IncidentsController < ApplicationController
                         .includes(:user, :status_page, :components, :incident_updates)
                         .recent
                         .order(created_at: :desc)
-                        .page(params[:page])
   end
 
   def show
@@ -53,7 +52,7 @@ class IncidentsController < ApplicationController
         end
       end
 
-      redirect_to @incident, notice: 'Incident was successfully created.'
+      redirect_to status_page_incident_url(@incident.status_page, @incident), notice: 'Incident was successfully created.'
     else
       @available_components = @status_page&.components&.by_position || []
       render :new, status: :unprocessable_entity
@@ -107,7 +106,7 @@ class IncidentsController < ApplicationController
         end
       end
 
-      redirect_to @incident, notice: 'Incident was successfully updated.'
+      redirect_to status_page_incident_url(@incident.status_page, @incident), notice: 'Incident was successfully updated.'
     else
       @available_components = @incident.status_page.components.by_position
       render :edit, status: :unprocessable_entity
@@ -116,7 +115,7 @@ class IncidentsController < ApplicationController
 
   def destroy
     @incident.destroy!
-    redirect_to incidents_url, notice: 'Incident was successfully deleted.'
+    redirect_to status_page_incidents_url(@incident.status_page), notice: 'Incident was successfully deleted.'
   end
 
   private

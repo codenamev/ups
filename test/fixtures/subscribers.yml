@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  account: one
+  status_page: one
+  email: test1@example.com
+  confirmed: true
+  confirmation_token: 'test_confirmation_token_1'
+  unsubscribe_token: 'test_unsubscribe_token_1'
+
+two:
+  account: two
+  status_page: two
+  email: test2@example.com
+  confirmed: true
+  confirmation_token: 'test_confirmation_token_2'
+  unsubscribe_token: 'test_unsubscribe_token_2'

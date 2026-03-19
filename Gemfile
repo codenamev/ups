@@ -74,4 +74,4 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "actionmcp", "~> 0.106.1"
+gem "actionmcp", "~> 0.107.0"

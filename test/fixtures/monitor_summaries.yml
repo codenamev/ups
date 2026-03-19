@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  status_monitor: one
+  period_type: MyString
+  period_start: 2026-02-13 00:40:46
+  checks_count: 1
+  successful_count: 1
+  avg_response_ms: 9.99
+  p95_response_ms: 9.99
+  p99_response_ms: 9.99
+  uptime_percentage: 9.99
+
+two:
+  status_monitor: two
+  period_type: MyString
+  period_start: 2026-02-13 00:40:46
+  checks_count: 1
+  successful_count: 1
+  avg_response_ms: 9.99
+  p95_response_ms: 9.99
+  p99_response_ms: 9.99
+  uptime_percentage: 9.99

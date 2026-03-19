@@ -81,20 +81,13 @@
                     class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
                 <%= link_to "API Tokens", api_tokens_path, 
                     class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
-                <% if current_account&.plan == "free" %>
-                  <%= link_to "Upgrade", subscriptions_path, 
-                      class: "border-transparent text-green-600 hover:text-green-700 hover:border-green-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
-                <% else %>
-                  <%= link_to "Billing", subscriptions_path, 
-                      class: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" %>
-                <% end %>
               </div>
             </div>
             <div class="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
               <span class="text-sm text-gray-600">
                 <%= current_user.email %>
               </span>
-              <%= link_to "Sign out", sign_out_path, method: :delete, 
+              <%= button_to "Sign out", sign_out_path, method: :delete,
                     class: "bg-white py-1 px-3 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" %>
             </div>
           </div>

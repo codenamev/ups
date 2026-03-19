@@ -28,6 +28,8 @@ class Api::V1::ComponentsController < Api::BaseController
     else
       render_validation_errors(ActiveRecord::RecordInvalid.new(component))
     end
+  rescue ActiveRecord::RecordNotUnique
+    render_error("A component with that name already exists on this status page", status: :unprocessable_entity)
   end
 
   # This is the "money endpoint" - update component status
@@ -55,7 +57,7 @@ class Api::V1::ComponentsController < Api::BaseController
   private
 
   def set_status_page
-    @status_page = current_account.status_pages.find(params[:status_page_id])
+    @status_page = find_status_page(params[:status_page_id])
   end
 
   def set_component

@@ -16,6 +16,11 @@ module ApplicationHelper
     end
   end
 
+  def incidents_path
+    sp = @status_page || @incident&.status_page
+    sp ? status_page_incidents_path(sp) : dashboard_path
+  end
+
   def status_badge_class(status)
     case status.to_s
     when "operational"

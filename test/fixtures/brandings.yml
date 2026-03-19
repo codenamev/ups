@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  status_page: one
+  logo_url: MyString
+  primary_color: MyString
+  custom_domain: MyString
+  favicon_url: MyString
+
+two:
+  status_page: two
+  logo_url: MyString
+  primary_color: MyString
+  custom_domain: MyString
+  favicon_url: MyString
