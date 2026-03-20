@@ -1,6 +1,8 @@
 require "ostruct"
 
 class StatusPageCreationService
+  DEFAULT_PRIMARY_COLOR = "#2563eb"
+
   include ActiveModel::Model
   include ActiveModel::Attributes
 
@@ -70,9 +72,9 @@ class StatusPageCreationService
 
   def setup_default_branding(status_page)
     if status_page.branding
-      status_page.branding.update!(primary_color: "#2563eb") unless status_page.branding.primary_color.present?
+      status_page.branding.update!(primary_color: DEFAULT_PRIMARY_COLOR) unless status_page.branding.primary_color.present?
     else
-      status_page.create_branding!(primary_color: "#2563eb")
+      status_page.create_branding!(primary_color: DEFAULT_PRIMARY_COLOR)
     end
   end
 

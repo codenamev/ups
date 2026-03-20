@@ -1,5 +1,7 @@
 # Base controller for API endpoints with token authentication
 class Api::BaseController < ActionController::API
+  RATE_LIMIT_PER_MINUTE = 60
+
   before_action :authenticate_api_token!
   before_action :set_current_account
   before_action :rate_limit_api_requests!
@@ -146,10 +148,10 @@ class Api::BaseController < ActionController::API
     cache_key = "api_rate_limit:#{current_api_token.id}:#{Time.current.strftime('%Y%m%d%H%M')}"
     request_count = Rails.cache.read(cache_key).to_i
 
-    # Rate limit: 60 requests per minute per token
-    if request_count >= 60
+    # Rate limit per token
+    if request_count >= RATE_LIMIT_PER_MINUTE
       render json: {
-        error: "Rate limit exceeded. Maximum 60 requests per minute per API token.",
+        error: "Rate limit exceeded. Maximum #{RATE_LIMIT_PER_MINUTE} requests per minute per API token.",
         retry_after: 60 - Time.current.sec
       }, status: :too_many_requests
       return

@@ -1,4 +1,7 @@
 class DeliverWebhookJob < ApplicationJob
+  OPEN_TIMEOUT = 10
+  READ_TIMEOUT = 30
+
   queue_as :webhooks
   retry_on StandardError, wait: :polynomially_longer, attempts: 3
 
@@ -38,8 +41,8 @@ class DeliverWebhookJob < ApplicationJob
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = uri.scheme == "https"
-    http.open_timeout = 10
-    http.read_timeout = 30
+    http.open_timeout = OPEN_TIMEOUT
+    http.read_timeout = READ_TIMEOUT
 
     request = Net::HTTP::Post.new(uri.path)
     request["Content-Type"] = "application/json"
