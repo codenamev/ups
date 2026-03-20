@@ -5,7 +5,7 @@ class Api::V1::UsersControllerTest < ActionDispatch::IntegrationTest
     @account = accounts(:one)
     @user = users(:one)
 
-    @auth_header = { "Authorization" => "Bearer ups_test_one_abcdef1234567890" }
+    @auth_header = api_auth_header
   end
 
   # --- Authentication ---

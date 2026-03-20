@@ -77,23 +77,13 @@ class Api::V1::ComponentsController < Api::BaseController
   end
 
   def serialize_component(component)
-    {
-      id: component.id,
-      name: component.name,
-      description: component.description,
-      status: normalize_status_for_api(component.status),
-      status_text: component.status.humanize,
-      position: component.position,
-      visible: component.visible,
-      uptime_percentage: calculate_uptime_percentage(component),
-      last_updated_at: component.updated_at,
-      created_at: component.created_at,
+    super.merge(
       status_page: {
         id: component.status_page.id,
         name: component.status_page.name,
         slug: component.status_page.slug
       }
-    }
+    )
   end
 
   def log_status_change(old_status, new_status)

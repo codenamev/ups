@@ -1,4 +1,3 @@
-require "resolv"
 require "ipaddr"
 
 class Webhook < ApplicationRecord
@@ -77,31 +76,23 @@ class Webhook < ApplicationRecord
       return # format validation will catch this
     end
 
-    return if uri.host.blank?
+    host = uri.host
+    return if host.blank?
 
+    # Block well-known internal hostnames
+    if host.match?(/\A(localhost|0\.0\.0\.0)\z/i) || host.end_with?(".local", ".internal")
+      errors.add(:url, "must not point to an internal or private network address")
+      return
+    end
+
+    # Check if host is an IP literal (avoid DNS resolution during validation)
     begin
-      addresses = Resolv.getaddresses(uri.host)
-    rescue Resolv::ResolvError
-      errors.add(:url, "could not be resolved and may point to an internal or private network")
-      return
-    end
-
-    if addresses.empty?
-      errors.add(:url, "could not be resolved and may point to an internal or private network")
-      return
-    end
-
-    addresses.each do |addr_str|
-      begin
-        ip = IPAddr.new(addr_str)
-      rescue IPAddr::InvalidAddressError
-        next
-      end
-
+      ip = IPAddr.new(host)
       if PRIVATE_RANGES.any? { |range| range.include?(ip) }
         errors.add(:url, "must not point to an internal or private network address")
-        return
       end
+    rescue IPAddr::InvalidAddressError
+      # Host is a domain name — IP check will happen at delivery time
     end
   end
 

@@ -75,7 +75,8 @@ class NotificationService
   private
 
   def send_notifications(preferences)
-    subscribers = preferences.includes(:subscriber).map(&:subscriber).uniq
+    subscriber_ids = preferences.select(:subscriber_id).distinct.pluck(:subscriber_id)
+    subscribers = Subscriber.where(id: subscriber_ids)
 
     subscribers.each do |subscriber|
       begin

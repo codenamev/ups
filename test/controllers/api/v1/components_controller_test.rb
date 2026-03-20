@@ -9,7 +9,7 @@ class Api::V1::ComponentsControllerTest < ActionDispatch::IntegrationTest
 
     # Matches fixture api_tokens(:one) which has token_prefix "ups_test_one"
     # and token_digest = SHA256("abcdef1234567890")
-    @auth_header = { "Authorization" => "Bearer ups_test_one_abcdef1234567890" }
+    @auth_header = api_auth_header
   end
 
   test "index returns components as JSON" do

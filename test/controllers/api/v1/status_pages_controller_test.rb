@@ -6,7 +6,7 @@ class Api::V1::StatusPagesControllerTest < ActionDispatch::IntegrationTest
     @user = users(:one)
     @status_page = status_pages(:one)
 
-    @auth_header = { "Authorization" => "Bearer ups_test_one_abcdef1234567890" }
+    @auth_header = api_auth_header
   end
 
   # --- Authentication ---

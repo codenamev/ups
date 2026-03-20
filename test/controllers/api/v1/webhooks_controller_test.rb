@@ -7,7 +7,7 @@ class Api::V1::WebhooksControllerTest < ActionDispatch::IntegrationTest
     @webhook = webhooks(:one)
 
     # Matches fixture api_tokens(:one)
-    @auth_header = { "Authorization" => "Bearer ups_test_one_abcdef1234567890" }
+    @auth_header = api_auth_header
   end
 
   test "should get index" do

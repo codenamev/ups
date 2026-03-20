@@ -36,4 +36,8 @@ class ActionDispatch::IntegrationTest
     token = user.generate_token_for(:magic_link)
     get verify_magic_link_url(token: token)
   end
+
+  def api_auth_header(token = "Bearer ups_test_one_abcdef1234567890")
+    { "Authorization" => token }
+  end
 end

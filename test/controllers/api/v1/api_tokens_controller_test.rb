@@ -6,7 +6,7 @@ class Api::V1::ApiTokensControllerTest < ActionDispatch::IntegrationTest
     @user = users(:one)
     @api_token = api_tokens(:one)
 
-    @auth_header = { "Authorization" => "Bearer ups_test_one_abcdef1234567890" }
+    @auth_header = api_auth_header
   end
 
   # --- Authentication ---

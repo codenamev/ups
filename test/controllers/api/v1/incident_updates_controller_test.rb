@@ -8,7 +8,7 @@ class Api::V1::IncidentUpdatesControllerTest < ActionDispatch::IntegrationTest
     @incident = incidents(:one)
     @incident_update = incident_updates(:one)
 
-    @auth_header = { "Authorization" => "Bearer ups_test_one_abcdef1234567890" }
+    @auth_header = api_auth_header
   end
 
   # --- Authentication ---

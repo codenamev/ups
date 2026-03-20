@@ -74,7 +74,7 @@ class WebhookService
   private
 
   def deliver_webhooks(status_page:, event_type:, event_data:)
-    webhooks = status_page.webhooks.active.select { |w| w.subscribes_to?(event_type) }
+    webhooks = status_page.webhooks.active.where("events LIKE ?", "%#{event_type}%")
 
     webhooks.each do |webhook|
       delivery = create_webhook_delivery(webhook, event_type, event_data)
