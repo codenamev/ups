@@ -55,12 +55,15 @@ class MonitoringOrchestrator
       status: success ? :up : :down
     )
 
-    # Record hourly summary
-    current_hour = Time.current.beginning_of_hour
+    # Record hourly and daily summaries
+    update_summary("hour", Time.current.beginning_of_hour, success, duration_ms)
+    update_summary("day", Time.current.beginning_of_day, success, duration_ms)
+  end
 
+  def update_summary(period_type, period_start, success, duration_ms)
     summary = @monitor.monitor_summaries.find_or_initialize_by(
-      period_type: "hour",
-      period_start: current_hour
+      period_type: period_type,
+      period_start: period_start
     )
 
     summary.checks_count = (summary.checks_count || 0) + 1
@@ -79,34 +82,6 @@ class MonitoringOrchestrator
     summary.p99_response_ms = [ summary.p99_response_ms || 0, duration_ms ].max
 
     # Calculate uptime percentage
-    summary.uptime_percentage = (summary.successful_count.to_f / summary.checks_count * 100).round(2)
-
-    summary.save!
-
-    # Also create/update daily summary
-    record_daily_summary(success, duration_ms)
-  end
-
-  def record_daily_summary(success, duration_ms)
-    current_day = Time.current.beginning_of_day
-
-    summary = @monitor.monitor_summaries.find_or_initialize_by(
-      period_type: "day",
-      period_start: current_day
-    )
-
-    summary.checks_count = (summary.checks_count || 0) + 1
-    summary.successful_count = (summary.successful_count || 0) + (success ? 1 : 0)
-
-    if summary.avg_response_ms.present?
-      total_response_time = (summary.avg_response_ms * (summary.checks_count - 1)) + duration_ms
-      summary.avg_response_ms = (total_response_time / summary.checks_count).round(2)
-    else
-      summary.avg_response_ms = duration_ms
-    end
-
-    summary.p95_response_ms = [ summary.p95_response_ms || 0, duration_ms ].max
-    summary.p99_response_ms = [ summary.p99_response_ms || 0, duration_ms ].max
     summary.uptime_percentage = (summary.successful_count.to_f / summary.checks_count * 100).round(2)
 
     summary.save!

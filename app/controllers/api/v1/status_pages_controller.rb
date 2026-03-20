@@ -1,5 +1,6 @@
 # API controller for managing status pages
 class Api::V1::StatusPagesController < Api::BaseController
+  include ApiStatusNormalizable
   before_action :set_status_page, only: [ :show, :update, :destroy ]
 
   def index
@@ -120,34 +121,5 @@ class Api::V1::StatusPagesController < Api::BaseController
     return "under_maintenance" if statuses.include?("maintenance")
 
     "operational"
-  end
-
-  def calculate_uptime_percentage(component)
-    # Simplified uptime calculation - in a real system you'd calculate based on incidents/downtime
-    # For now, return a static percentage based on status
-    case component.status
-    when "operational"
-      100.0
-    when "degraded_performance"
-      85.0
-    when "partial_outage"
-      60.0
-    when "major_outage"
-      0.0
-    when "maintenance"
-      95.0
-    else
-      100.0
-    end
-  end
-
-  def normalize_status_for_api(status)
-    # Map internal status values to API standard values
-    case status
-    when "maintenance"
-      "under_maintenance"
-    else
-      status
-    end
   end
 end

@@ -1,5 +1,6 @@
 # API controller for managing components
 class Api::V1::ComponentsController < Api::BaseController
+  include ApiStatusNormalizable
   before_action :set_status_page
   before_action :set_component, only: [ :show, :update, :destroy ]
 
@@ -95,25 +96,6 @@ class Api::V1::ComponentsController < Api::BaseController
     }
   end
 
-  def calculate_uptime_percentage(component)
-    # Simplified uptime calculation - in a real system you'd calculate based on incidents/downtime
-    # For now, return a static percentage based on status
-    case component.status
-    when "operational"
-      100.0
-    when "degraded_performance"
-      85.0
-    when "partial_outage"
-      60.0
-    when "major_outage"
-      0.0
-    when "maintenance"
-      95.0
-    else
-      100.0
-    end
-  end
-
   def log_status_change(old_status, new_status)
     # Create a status update record for audit trail
     @component.status_updates.create!(
@@ -131,25 +113,5 @@ class Api::V1::ComponentsController < Api::BaseController
     return nil if old_status == new_status
 
     "Component status changed from #{old_status.humanize} to #{new_status.humanize}"
-  end
-
-  def normalize_status_for_api(status)
-    # Map internal status values to API standard values
-    case status
-    when "maintenance"
-      "under_maintenance"
-    else
-      status
-    end
-  end
-
-  def normalize_status_from_api(status)
-    # Map API status values to internal values
-    case status
-    when "under_maintenance"
-      "maintenance"
-    else
-      status
-    end
   end
 end
