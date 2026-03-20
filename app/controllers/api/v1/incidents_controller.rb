@@ -27,7 +27,8 @@ class Api::V1::IncidentsController < Api::BaseController
     if incident.save
       # Create initial incident update
       incident.incident_updates.create!(
-        message: incident.description,
+        title: "Initial update",
+        content: incident.description,
         status: incident.status,
         user: current_user
       ) if incident.description.present?
@@ -125,7 +126,8 @@ class Api::V1::IncidentsController < Api::BaseController
   def serialize_incident_update(update)
     {
       id: update.id,
-      message: update.message,
+      title: update.title,
+      content: update.content,
       status: update.status,
       status_text: update.status&.humanize,
       created_by: {
@@ -149,7 +151,8 @@ class Api::V1::IncidentsController < Api::BaseController
                     default_status_message(@incident.status, old_status)
 
     @incident.incident_updates.create!(
-      message: update_message,
+      title: "Status update",
+      content: update_message,
       status: @incident.status,
       user: current_user
     )

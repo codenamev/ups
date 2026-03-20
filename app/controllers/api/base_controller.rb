@@ -4,8 +4,8 @@ class Api::BaseController < ActionController::API
   before_action :set_current_account
   before_action :rate_limit_api_requests!
 
-  before_action :check_idempotency_key, only: [ :create, :update ]
-  after_action :store_idempotency_key, only: [ :create, :update ]
+  before_action :check_idempotency_key, if: :idempotent_action?
+  after_action :store_idempotency_key, if: :idempotent_action?
 
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
   rescue_from ActiveRecord::RecordInvalid, with: :render_validation_errors
@@ -160,6 +160,10 @@ class Api::BaseController < ActionController::API
 
     # Log API request for analytics
     log_api_request
+  end
+
+  def idempotent_action?
+    action_name.in?(%w[create update])
   end
 
   def log_api_request

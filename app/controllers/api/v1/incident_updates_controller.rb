@@ -71,13 +71,14 @@ class Api::V1::IncidentUpdatesController < Api::BaseController
   end
 
   def incident_update_params
-    params.require(:incident_update).permit(:message, :status)
+    params.require(:incident_update).permit(:title, :content, :status)
   end
 
   def serialize_incident_update(update)
     {
       id: update.id,
-      message: update.message,
+      title: update.title,
+      content: update.content,
       status: update.status,
       status_text: update.status&.humanize,
       incident: {
