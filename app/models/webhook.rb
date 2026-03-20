@@ -1,3 +1,6 @@
+require "resolv"
+require "ipaddr"
+
 class Webhook < ApplicationRecord
   belongs_to :account
   belongs_to :status_page
@@ -17,6 +20,7 @@ class Webhook < ApplicationRecord
   validates :secret_token, presence: true
 
   validate :events_must_be_valid
+  validate :validate_not_internal_url
 
   before_validation :generate_secret_token, on: :create
   before_validation :normalize_events
@@ -51,6 +55,54 @@ class Webhook < ApplicationRecord
     end
   rescue JSON::ParserError
     errors.add(:events, "contains invalid JSON")
+  end
+
+  PRIVATE_RANGES = [
+    IPAddr.new("127.0.0.0/8"),
+    IPAddr.new("10.0.0.0/8"),
+    IPAddr.new("172.16.0.0/12"),
+    IPAddr.new("192.168.0.0/16"),
+    IPAddr.new("169.254.0.0/16"),
+    IPAddr.new("0.0.0.0/8"),
+    IPAddr.new("::1/128"),
+    IPAddr.new("fc00::/7")
+  ].freeze
+
+  def validate_not_internal_url
+    return if url.blank?
+
+    begin
+      uri = URI.parse(url)
+    rescue URI::InvalidURIError
+      return # format validation will catch this
+    end
+
+    return if uri.host.blank?
+
+    begin
+      addresses = Resolv.getaddresses(uri.host)
+    rescue Resolv::ResolvError
+      errors.add(:url, "could not be resolved and may point to an internal or private network")
+      return
+    end
+
+    if addresses.empty?
+      errors.add(:url, "could not be resolved and may point to an internal or private network")
+      return
+    end
+
+    addresses.each do |addr_str|
+      begin
+        ip = IPAddr.new(addr_str)
+      rescue IPAddr::InvalidAddressError
+        next
+      end
+
+      if PRIVATE_RANGES.any? { |range| range.include?(ip) }
+        errors.add(:url, "must not point to an internal or private network address")
+        return
+      end
+    end
   end
 
   def events_must_be_valid

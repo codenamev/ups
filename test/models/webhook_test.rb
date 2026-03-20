@@ -185,6 +185,60 @@ class WebhookTest < ActiveSupport::TestCase
     assert @webhook.errors[:events].any? || webhook.errors[:events].any?
   end
 
+  # --- SSRF protection: validate_not_internal_url ---
+
+  test "rejects http://localhost URL" do
+    @webhook.url = "http://localhost/hook"
+    assert_not @webhook.valid?
+    assert @webhook.errors[:url].any? { |e| e.include?("internal") || e.include?("private") }
+  end
+
+  test "rejects http://127.0.0.1 URL" do
+    @webhook.url = "http://127.0.0.1/hook"
+    assert_not @webhook.valid?
+    assert @webhook.errors[:url].any? { |e| e.include?("internal") || e.include?("private") }
+  end
+
+  test "rejects http://0.0.0.0 URL" do
+    @webhook.url = "http://0.0.0.0/hook"
+    assert_not @webhook.valid?
+    assert @webhook.errors[:url].any? { |e| e.include?("internal") || e.include?("private") }
+  end
+
+  test "rejects http://10.0.0.1 URL (private range)" do
+    @webhook.url = "http://10.0.0.1/hook"
+    assert_not @webhook.valid?
+    assert @webhook.errors[:url].any? { |e| e.include?("internal") || e.include?("private") }
+  end
+
+  test "rejects http://172.16.0.1 URL (private range)" do
+    @webhook.url = "http://172.16.0.1/hook"
+    assert_not @webhook.valid?
+    assert @webhook.errors[:url].any? { |e| e.include?("internal") || e.include?("private") }
+  end
+
+  test "rejects http://192.168.1.1 URL (private range)" do
+    @webhook.url = "http://192.168.1.1/hook"
+    assert_not @webhook.valid?
+    assert @webhook.errors[:url].any? { |e| e.include?("internal") || e.include?("private") }
+  end
+
+  test "rejects http://[::1] URL (IPv6 localhost)" do
+    @webhook.url = "http://[::1]/hook"
+    assert_not @webhook.valid?
+    assert @webhook.errors[:url].any? { |e| e.include?("internal") || e.include?("private") }
+  end
+
+  test "accepts http://example.com (valid external URL)" do
+    @webhook.url = "http://example.com/hook"
+    assert @webhook.valid?
+  end
+
+  test "accepts https://hooks.slack.com/services/xxx (valid external URL)" do
+    @webhook.url = "https://hooks.slack.com/services/xxx"
+    assert @webhook.valid?
+  end
+
   # --- Scope ---
 
   test "active scope returns only active webhooks" do
