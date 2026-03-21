@@ -199,7 +199,7 @@ class WebhookDeliveryTest < ActiveSupport::TestCase
   end
 
   test "next_retry_at returns last_retry_at plus appropriate delay" do
-    time = 1.hour.ago
+    time = 1.hour.ago.change(usec: 0)
     @delivery.update_columns(status: "failed", retries: 1, last_retry_at: time)
     @delivery.reload
     expected = time + WebhookDelivery::RETRY_DELAYS[1]
