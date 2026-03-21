@@ -3,7 +3,7 @@
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t ups_dev_rails .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name ups_dev_rails ups_dev_rails
+# docker run -d -p 80:80 -e SECRET_KEY_BASE=<your-secret> --name ups_dev_rails ups_dev_rails
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 

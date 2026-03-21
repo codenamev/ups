@@ -50,10 +50,12 @@ ups is a single Rails app with a SQLite database. No Redis, no Postgres, no exte
 docker run -d \
   -p 3000:80 \
   -v ups_storage:/rails/storage \
-  -e RAILS_MASTER_KEY=your-master-key \
+  -e SECRET_KEY_BASE=your-secret-key \
   -e HOST_URL=https://status.yourdomain.com \
   ghcr.io/codenamev/ups:latest
 ```
+
+> No credentials file or master key needed. A random `SECRET_KEY_BASE` is auto-generated if not provided.
 
 > **Docker issues?** See [Docker Troubleshooting Guide](docs/DOCKER_TROUBLESHOOTING.md)
 
@@ -130,12 +132,13 @@ ups includes an MCP server at `/mcp`, allowing AI agents to query and manage sta
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `RAILS_MASTER_KEY` | Decrypts credentials | Required |
+| `SECRET_KEY_BASE` | Secret for sessions/cookies | Auto-generated |
+| `RESEND_API_KEY` | Resend email API key | Optional |
 | `HOST_URL` | Public URL for email links | `http://localhost:3000` |
 | `SOLID_QUEUE_IN_PUMA` | Run jobs in web process | `true` |
 | `WEB_CONCURRENCY` | Puma worker count | `1` |
 
-Email delivery is configured via Rails credentials (`bin/rails credentials:edit`).
+Email delivery is configured via the `RESEND_API_KEY` environment variable.
 
 ## Managed Service
 

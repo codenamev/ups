@@ -275,7 +275,7 @@ class StatusMonitorTest < ActiveSupport::TestCase
   end
 
   test "next_check_at returns last_checked_at plus interval_seconds" do
-    checked_at = 5.minutes.ago
+    checked_at = 5.minutes.ago.change(usec: 0)
     @monitor.last_checked_at = checked_at
     @monitor.interval_seconds = 300
     assert_equal checked_at + 300.seconds, @monitor.next_check_at

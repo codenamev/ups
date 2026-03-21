@@ -99,7 +99,7 @@ class IncidentEventTest < ActiveSupport::TestCase
   end
 
   test "set_occurred_at does not overwrite existing occurred_at" do
-    custom_time = 3.days.ago
+    custom_time = 3.days.ago.change(usec: 0)
     event = IncidentEvent.new(
       incident: @incident,
       user: @user,
