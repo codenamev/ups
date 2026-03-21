@@ -1,5 +1,13 @@
 #!/bin/bash -e
 
+# Generate SECRET_KEY_BASE if not provided and no valid RAILS_MASTER_KEY exists.
+# This lets self-hosters run the Docker image without credentials setup.
+if [ -z "$SECRET_KEY_BASE" ] && [ -z "$RAILS_MASTER_KEY" ]; then
+  export SECRET_KEY_BASE=$(ruby -rsecurerandom -e "puts SecureRandom.hex(64)")
+  echo "No RAILS_MASTER_KEY or SECRET_KEY_BASE set — generated a random secret."
+  echo "Set SECRET_KEY_BASE in your environment to keep sessions across restarts."
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare

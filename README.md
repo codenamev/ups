@@ -50,10 +50,14 @@ ups is a single Rails app with a SQLite database. No Redis, no Postgres, no exte
 docker run -d \
   -p 3000:80 \
   -v ups_storage:/rails/storage \
-  -e RAILS_MASTER_KEY=your-master-key \
+  -e SECRET_KEY_BASE=$(openssl rand -hex 64) \
   -e HOST_URL=https://status.yourdomain.com \
   ghcr.io/codenamev/ups:latest
 ```
+
+That's it. No credentials file, no master key. The app boots, creates the database, and you're live at `http://localhost:3000`.
+
+> **Want email notifications?** Add `-e RESEND_API_KEY=re_yourkey` for transactional emails via [Resend](https://resend.com).
 
 > **Docker issues?** See [Docker Troubleshooting Guide](docs/DOCKER_TROUBLESHOOTING.md)
 
@@ -130,12 +134,14 @@ ups includes an MCP server at `/mcp`, allowing AI agents to query and manage sta
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `RAILS_MASTER_KEY` | Decrypts credentials | Required |
+| `SECRET_KEY_BASE` | Session signing key (generate with `openssl rand -hex 64`) | Auto-generated if missing |
 | `HOST_URL` | Public URL for email links | `http://localhost:3000` |
+| `RESEND_API_KEY` | [Resend](https://resend.com) API key for email notifications | None (emails disabled) |
 | `SOLID_QUEUE_IN_PUMA` | Run jobs in web process | `true` |
 | `WEB_CONCURRENCY` | Puma worker count | `1` |
+| `RAILS_MASTER_KEY` | Decrypts Rails credentials (advanced) | Not required for Docker |
 
-Email delivery is configured via Rails credentials (`bin/rails credentials:edit`).
+Most self-hosters only need `SECRET_KEY_BASE` and `HOST_URL`. Add `RESEND_API_KEY` when you want email alerts.
 
 ## Managed Service
 

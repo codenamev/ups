@@ -64,7 +64,11 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     user_name: ENV.fetch("RESEND_SMTP_USERNAME", "resend"),
-    password: Rails.application.credentials.dig(:resend, :api_key),
+    password: ENV["RESEND_API_KEY"] || begin
+      Rails.application.credentials.dig(:resend, :api_key)
+    rescue ActiveSupport::MessageEncryptor::InvalidMessage
+      nil
+    end,
     address: "smtp.resend.com",
     port: 587,
     authentication: :plain,

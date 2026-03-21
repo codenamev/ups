@@ -21,7 +21,9 @@ services:
       - ups_storage:/rails/storage
       - ups_db:/rails/storage/production.sqlite3
     environment:
-      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY:-}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
       - HOST_URL=${HOST_URL:-http://localhost:3000}
       - SOLID_QUEUE_IN_PUMA=${SOLID_QUEUE_IN_PUMA:-true}
       - WEB_CONCURRENCY=${WEB_CONCURRENCY:-1}
