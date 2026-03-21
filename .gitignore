@@ -27,6 +27,9 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
+# Ignore encrypted credentials (use env vars for Docker deployments)
+/config/credentials.yml.enc
+
 # Ignore Kamal secrets
 /.kamal/secrets
 
