@@ -16,17 +16,19 @@ A complete, self-hostable status page platform for your web services, APIs, and 
 
 ## Why ups?
 
-Most status page tools are either expensive SaaS ($29-399/mo), abandoned open-source projects, or over-engineered for what should be a simple problem.
-
 ups is a single Rails app with a SQLite database. No Redis, no Postgres, no external dependencies. Deploy it anywhere Docker runs.
 
-| | ups (self-hosted) | Statuspage.io | Betteruptime |
-|---|---|---|---|
-| Price | Free | $29-399/mo | $20-85/mo |
-| Self-hostable | Yes | No | No |
-| Open source | Yes (AGPL-3.0) | No | No |
-| Database | SQLite | Postgres | Unknown |
-| Setup time | 5 minutes | 30 minutes | 15 minutes |
+There are great tools in this space already. [Uptime Kuma](https://github.com/louislam/uptime-kuma) and [OpenStatus](https://github.com/openstatusHQ/openstatus) are solid open-source options for general-purpose monitoring. ups takes a different approach: it's built for teams running AI agents and LLM-powered services, with first-class support for agent component metadata and [MCP integration](#mcp-model-context-protocol).
+
+| | ups (self-hosted) | ups.dev (managed) | Statuspage.io | Better Stack |
+|---|---|---|---|---|
+| Price | Free | Free / $19/mo | $79-399/mo | Free / $20-85/mo |
+| Self-hostable | Yes | No | No | No |
+| Open source | Yes (AGPL-3.0) | No | No | No |
+| Agent monitoring | Yes | Yes | No | No |
+| MCP support | Yes | Yes | No | No |
+| Database | SQLite | SQLite | Postgres | Unknown |
+| Setup time | 5 minutes | 2 minutes | 30 minutes | 15 minutes |
 
 ## Features
 
